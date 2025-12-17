@@ -1,0 +1,191 @@
+In questa sezione vengono descritti i requisiti relativi a quattro casi d'uso rilevanti, selezionati in base alla loro importanza per la corretta operatività del sistema e alla loro complessità logica.
+
+\section{Use Case 1 - Ricerca}
+In questo caso d'uso, l'utente effettua una ricerca avanzata di inserzioni di proprietà immobiliari. In essa, può specificare diversi criteri, tra cui:
+\begin{itemize}
+\item{il tipo di inserzione}
+\item{la posizione di partenza}
+\item{il raggio di ricerca}
+\item{il prezzo o l'affitto massimo}
+\item{il piano}
+\item{la presenza di ascensore}
+\item{la dimensione in metri quadri}
+\item{il numero di stanze}
+\end{itemize}
+
+\begin{table}[H]
+    \caption{Cockburn UC \#1 - Cerca inserzioni di proprietà immobiliari}\label{tab:uc1_ricercainserzioni} 
+    \centering
+    \begin{tabular}{|m{4cm}|m{7cm}|}
+        \hline
+        \textbf{Use Case \#1}  &  Cerca inserzioni di proprietà immobiliari \\ \hline
+        \textbf{Goal in context}  &  Ottenere una lista di immobili consultabili \\ \hline
+        \textbf{Preconditions}  &  L'utente si trova nella homepage e vede la schermata di ricerca (\hyperref[fig:m1_0_search]{mockup 1.0}) \\ \hline
+        \textbf{Success End Condition}  &  L'utente può visualizzare immobili che soddisfano i suoi criteri di ricerca \\ \hline
+        \textbf{Failed End Condition}  &  Non sono stati caricati immobili in linea con i parametri di ricerca dell'utente. \\ \hline
+        \textbf{Primary Actor}  &  Utente \\ \hline
+        \textbf{Trigger}  &  Compila il form di ricerca \\ \hline
+    \end{tabular}
+\end{table}
+
+\begin{longtable}{|m{0.8cm}|L{3cm}|L{3cm}|L{3cm}|}
+    \caption{Cockburn UC \#1 – Main Scenario}\label{tab:uc1_mainscenario} \\ \hline
+        \multicolumn{4}{|c|}{\textbf{Main Scenario}} \\ \hline
+        \textbf{Step n.}  & \textbf{Utente}  &  \textbf{Mappa interattiva}  &  \textbf{System}\\ \hline
+        \textbf{1}  &  Compila il form di ricerca  &  &  \\ \hline
+        \textbf{2}  &  &  &  Recupera risultati che soddisfano i criteri di ricerca specificati \\ \hline
+        \textbf{3}  &  &   Mostra marker sulle coordinate dei risultati recuperati & \\ \hline
+        \textbf{4}  & L'utente clicca su un marker relativo a un immobile  &  &  \\ \hline
+        \textbf{5}  &  &  & Mostra dettagli inserzione (\hyperref[fig:m1_1_details]{mockup 1.1}) \\ \hline
+\end{longtable}
+
+\begin{longtable}{|m{0.8cm}|L{3cm}|L{3cm}|L{3cm}|}
+    \caption{Cockburn UC \#1 – Extension 1}\label{tab:uc1_extension1} \\ \hline
+        \multicolumn{4}{|c|}{\textbf{Extension 1}} \\ \hline
+        \textbf{Step n.}  & \textbf{Utente}  &  \textbf{Mappa interattiva}  &  \textbf{System}\\ \hline
+        \textbf{4.1}  &  Modifica il form di ricerca  &  &  \\ \hline
+        \textbf{5.1}  &  &  &  Ritorna al punto 2 del main scenario \\ \hline
+\end{longtable}
+
+\begin{longtable}{|m{0.8cm}|L{3cm}|L{3cm}|L{3cm}|}
+    \caption{Cockburn UC \#1 – Extension 2}\label{tab:uc1_extension2} \\ \hline
+        \multicolumn{4}{|c|}{\textbf{Extension 2}} \\ \hline
+        \textbf{Step n.}  & \textbf{Utente}  &  \textbf{Mappa interattiva}  &  \textbf{System}\\ \hline
+        \textbf{3.2}  &  & Non mostra nessun marker perché non sono presenti risultati che soddisfano i criteri di ricerca specificati  &  \\ \hline
+        \textbf{4.2}  &  Ritorna al punto 1 del main scenario &  & \\ \hline
+\end{longtable}
+
+\newpage
+
+\section{Use Case 2 - Ricerche salvate}
+In questo use case, l'utente salva i criteri di ricerca inseriti. In questo modo, avrà la possibilità di eseguire la stessa interrogazione in futuro senza dover specificare nuovamente i criteri desiderati.
+
+\begin{table}[H]
+    \caption{Cockburn UC \#2 - Salva una ricerca effettuata}\label{tab:uc2_salvaricerca} 
+    \centering
+    \begin{tabular}{|m{4cm}|m{7cm}|}
+        \hline
+        \textbf{Use Case \#2}  &  Salva una ricerca effettuata \\ \hline
+        \textbf{Goal in context}  &  Salvare una ricerca \\ \hline
+        \textbf{Preconditions}  &  L'utente è autenticato e si trova nella homepage, vedendo il \hyperref[fig:m2_0_savedsearch]{mockup 2.0} \\ \hline
+        \textbf{Success End Condition}  & I criteri di ricerca vengono salvati e i risultati a essi relativi sono rapidamente consultabili dall'utente \\ \hline
+        \textbf{Failed End Condition}  &  Il sistema fallisce nel salvare la ricerca \\ \hline
+        \textbf{Primary Actor}  &  Utente \\ \hline
+        \textbf{Trigger}  &  Compila il form di ricerca \\ \hline
+    \end{tabular}
+\end{table}
+
+\begin{longtable}{|m{0.8cm}|L{4.5cm}|L{4.5cm}|}
+    \caption{Cockburn UC \#2 - Main Scenario}\label{tab:uc2_mainscenario} \\ \hline
+        \multicolumn{3}{|c|}{Main Scenario} \\ \hline
+        \textbf{Step n.}  & \textbf{Utente}  &  \textbf{System}\\ \hline
+
+        \textbf{1}  &  Compila il form di ricerca  &  \\ \hline
+        \textbf{2}  &  Clicca sul pulsante "Save search" & \\ \hline
+        \textbf{3}  &  &   Salva la ricerca e la mostra nella sezione relativa alle ricerche salvate. \\ \hline
+\end{longtable}
+
+\begin{longtable}{|m{0.8cm}|L{4.5cm}|L{4.5cm}|}
+    \caption{Cockburn UC \#2 – Extension 1}\label{tab:uc2_extension1} \\ \hline
+        \multicolumn{3}{|c|}{\textbf{Extension 1}} \\ \hline
+        \textbf{Step n.}  & \textbf{Utente}  &  \textbf{System}\\ \hline
+        \textbf{3.1}  &  Fallisce nel salvare la ricerca e mostra un messaggio di errore  &  \\ \hline
+\end{longtable}
+
+
+\newpage
+
+\section{Use Case 3 - Caricamento inserzioni}
+In questo use case, l'agente immobiliare carica una nuova inserzione di una proprietà immobiliare. Tra i dati, dovrà necessariamente inserire almeno i seguenti:
+\begin{itemize}
+\item{l'indirizzo}
+\item{il tipo di inserzione (in vendita, in affitto, etc)}
+\item{il prezzo (se l'immobile è in vendita)}
+\item{l'affitto (se l'immobile è in affitto}
+\end{itemize}
+Avrà anche la possibilità di inserire dati opzionali, che corrispondono a quelli che l'utente può utilizzare per la ricerca (dimensione in metri quadri, numero di stanze, piano, presenza di ascensore), oltre a una descrizione in formato rich text, comprensiva di eventuali immagini.
+
+\begin{table}[H]
+    \caption{Cockburn UC \#3 - Carica una nuova inserzione per una proprietà immobiliare}\label{tab:uc3_caricainserzione} 
+    \centering
+    \begin{tabular}{|m{4cm}|m{7cm}|}
+        \hline
+        \textbf{Use Case \#3}  &  Carica una nuova inserzione per una proprietà immobiliare \\ \hline
+        \textbf{Goal in context}  &  Caricare una nuova inserzione \\ \hline
+        \textbf{Preconditions}  &  L'agente immobiliare è autenticato e si trova sulla Dashboard, vedendo il \hyperref[fig:m3_0_upload]{mockup 3.0} \\ \hline
+        \textbf{Success End Condition}  & Viene caricata una nuova inserzione \\ \hline
+        \textbf{Failed End Condition}  &  Il caricamento fallisce \\ \hline
+        \textbf{Primary Actor}  &  Agente immobiliare \\ \hline
+        \textbf{Trigger}  &  Compila il form di caricamento di un'inserzione inserendo i campi obbligatori (tipo, costo di vendita/affitto e indirizzo) \\ \hline
+    \end{tabular}
+\end{table}
+
+\begin{longtable}{|m{0.8cm}|L{3cm}|L{3cm}|L{3cm}|}
+    \caption{Cockburn UC \#3 - Main Scenario}\label{tab:uc3_mainscenario} \\ \hline
+        \multicolumn{4}{|c|}{\textbf{Main Scenario}} \\ \hline
+        \textbf{Step n.}  & \textbf{Agente immobiliare}  &  \textbf{Mappa interattiva}  &  \textbf{System}\\ \hline
+
+        \textbf{1}  &  Compila il form di caricamento di un'inserzione inserendo i campi obbligatori (tipo, costo di vendita/affitto e indirizzo)  & &  \\ \hline
+        \textbf{2}  & & Ottiene l'indirizzo esatto e le coordinate geografiche dell'immobile & \\ \hline
+        \textbf{3}  & & & Attiva pulsante "Submit" \\ \hline
+        \textbf{4}  & Compila gli altri campi opzionali del form di caricamento e clicca sul pulsante "Submit" & & \\ \hline
+        \textbf{5}  & & & Mostra schermata di riepilogo (\hyperref[fig:m3_1_confirm]{mockup 3.1}) \\ \hline
+        \textbf{6}  & Clicca sul pulsante "Confirm" & & \\ \hline
+        \textbf{7}  & & & Mostra avviso di conferma e torna alla schermata "Agent Dashboard" (\hyperref[fig:m3_0_upload]{mockup 3.0}) \\ \hline
+\end{longtable}
+
+\begin{longtable}{|m{0.8cm}|L{3cm}|L{3cm}|L{3cm}|}
+    \caption{Cockburn UC \#3 – Extension 1}\label{tab:uc3_extension1} \\ \hline
+        \multicolumn{4}{|c|}{\textbf{Extension 1}} \\ \hline
+        \textbf{Step n.}  & \textbf{Agente immobiliare}  &  \textbf{Mappa interattiva}  &  \textbf{System}\\ \hline
+        \textbf{4.1}  &  Modifica l'indirizzo  &  &  \\ \hline
+        \textbf{5.1}  &  &  Ritorna al punto 2 del main scenario & \\ \hline
+\end{longtable}
+
+\begin{longtable}{|m{0.8cm}|L{3cm}|L{3cm}|L{3cm}|}
+    \caption{Cockburn UC \#3 – Extension 2}\label{tab:uc3_extension2} \\ \hline
+        \multicolumn{4}{|c|}{\textbf{Extension 2}} \\ \hline
+        \textbf{Step n.}  & \textbf{Agente immobiliare}  &  \textbf{Mappa interattiva}  &  \textbf{System}\\ \hline
+        \textbf{6.1}  &  Chiude la schermata di riepilogo  &  &  \\ \hline
+        \textbf{5.1}  &  &  &  Ritorna al punto 3 del main scenario \\ \hline
+\end{longtable}
+
+\newpage
+
+\section{Use Case 4 - Preferenze di notifica}
+In questo caso d'uso, l'utente modifica le proprie preferenze di notifica, specificandone le modalità e applicando filtri, tra cui:
+\begin{itemize}
+\item{il tipo di inserzione}
+\item{la città in cui è situato l'immobile}
+\end{itemize}
+
+\begin{table}[H]
+    \caption{Cockburn UC \#4 - Imposta le proprie preferenze di notifica}\label{tab:uc4_notifications_preferences} 
+    \centering
+    \begin{tabular}{|m{4cm}|m{7cm}|}
+        \hline
+        \textbf{Use Case \#4}  &  Imposta le proprie preferenze di notifica \\ \hline
+        \textbf{Goal in context}  &  Impostare modalità di ricezione delle notifiche e filtri relativi a quali notifiche ricevere \\ \hline
+        \textbf{Preconditions}  &  L'utente è autenticato e vede la schermata di gestione delle preferenze di notifica (\hyperref[fig:m4_0_notification_preferences]{mockup 4.0}) \\ \hline
+        \textbf{Success End Condition}  &  Le preferenze di notifica dell'utente sono modificate con successo \\ \hline
+        \textbf{Failed End Condition}  &  La modifica delle preferenze di notifica dell'utente fallisce \\ \hline
+        \textbf{Primary Actor}  &  Utente \\ \hline
+        \textbf{Trigger}  &  Clicca su uno dei pulsanti nella colonna "Action" del \hyperref[fig:m4_0_notification_preferences]{mockup 4.0}) \\ \hline
+    \end{tabular}
+\end{table}
+
+\begin{longtable}{|m{0.8cm}|L{4.5cm}|L{4.5cm}|}
+    \caption{Cockburn UC \#4 - Main Scenario}\label{tab:uc4_extension1} \\ \hline
+        \multicolumn{3}{|c|}{Main Scenario} \\ \hline
+        \textbf{Step n.}  & \textbf{Utente}  &  \textbf{System}\\ \hline
+
+        \textbf{1}  &  Clicca su uno dei pulsanti nella colonna "Action" del \hyperref[fig:m4_0_notification_preferences]{mockup 4.0})  &  \\ \hline
+        \textbf{2}  & &  Mostra un messaggio per segnalare che l'operazione è avvenuta con successo \\ \hline
+\end{longtable}
+
+\begin{longtable}{|m{0.8cm}|L{4.5cm}|L{4.5cm}|}
+    \caption{Cockburn UC \#4 - Extension 1}\label{tab:uc4_mainscenario} \\ \hline
+        \multicolumn{3}{|c|}{Main Scenario} \\ \hline
+        \textbf{Step n.}  & \textbf{Utente}  &  \textbf{System}\\ \hline
+        \textbf{2.1}  &  & Mostra un messaggio di errore \\ \hline
+\end{longtable}

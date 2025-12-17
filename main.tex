@@ -1,0 +1,151 @@
+\documentclass[a4paper,12pt,oneside]{report}
+\title{On DietiEstates25 Project}
+\author{Luigi Ruggiero, Giuseppe Amato}
+
+\usepackage[italian]{babel}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{hyperref}
+\usepackage{titlesec}
+\usepackage{setspace}
+\usepackage{tocloft}
+\usepackage{fancyhdr}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{needspace}
+\usepackage{listings}
+\setlength{\tabcolsep}{6pt}
+\renewcommand{\arraystretch}{1.0}
+\setlength{\arrayrulewidth}{0.5mm}
+\setlength{\LTcapwidth}{\textwidth}
+
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}m{#1}}
+
+\usepackage[a4paper,top=2.5cm,bottom=3.5cm,left=3cm,right=3cm]{geometry}
+
+\setstretch{1.2}
+\setlength{\parindent}{1.5em}
+\setlength{\parskip}{0.5em}
+
+\titleformat{\chapter}{\Huge\bfseries}{\thechapter}{1em}{}
+\titleformat{\section}{\Large\bfseries}{\thesection}{1em}{}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{DietiEstates25}
+\fancyhead[R]{\leftmark}
+\fancyfoot[C]{\thepage}
+
+\fancyhead[L]{\small DietiEstates25}
+\fancyhead[R]{\small \leftmark}
+\fancyfoot[C]{\thepage}
+\setlength{\headheight}{15pt}
+\renewcommand{\chaptermark}[1]{\markboth{#1}{}}
+
+\lstdefinelanguage{yaml}{
+  basicstyle=\ttfamily\small,
+  showstringspaces=false,
+  comment=[l]{##},
+  commentstyle=\color{gray}\ttfamily,
+  stringstyle=\color{orange}\ttfamily,
+  morestring=[b]',
+  morestring=[b]",
+  keywords={true,false,null,y,n,yes,no,on,off},
+  keywordstyle=\color{blue}\bfseries,
+  sensitive=false
+}
+
+\lstset{
+  frame=single,
+  breaklines=true,
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  captionpos=b,
+  basicstyle=\ttfamily\small
+}
+
+\begin{document}
+
+\begin{titlepage}
+    \begin{center}
+        {\LARGE Università degli Studi di Napoli Federico II}\\[0.3cm]
+        {\large Dipartimento di Ingegneria Elettrica e delle Tecnologie dell'Informazione}\\[1cm]
+        \includegraphics[width=5cm]{Figures/Logo-UNINA.jpg}\\[1cm]
+
+        {\Huge\bfseries DietiEstates25}\\[0.5cm]
+        {\Large Progetto di Ingegneria del Software}\\[1cm]
+
+        \textbf{Autori:}\\
+        Giuseppe Amato (N86002167)\\
+        Luigi Ruggiero (N86003593)\\[0.5cm]
+
+        \textbf{Docenti:}\\
+        Prof. Sergio di Martino\\
+        Prof. Luigi Libero Lucio Starace\\[1cm]
+
+        {\Large Anno accademico 2024-2025}
+    \end{center}
+\end{titlepage}
+
+%---
+\tableofcontents
+\newpage
+%---
+
+\part{Documento dei Requisiti Software}
+\chapter{Introduzione}
+\include{Chapters/1_Introduction}
+
+\chapter{Glossario}
+\include{Chapters/2_Glossario}
+
+\chapter{Personas}
+\include{Chapters/Software_Requirements/3_Personas}
+
+\chapter{Modellazione dei Casi d'Uso}
+\include{Chapters/Software_Requirements/4_UseCases}
+
+\chapter{Mockups}
+\include{Chapters/Software_Requirements/5_MockUps}
+
+\chapter{Specifica formale dei requisiti}
+\include{Chapters/Software_Requirements/6_Cockburn}
+
+\chapter{Specifica informale di ulteriori requisiti}
+\include{Chapters/Software_Requirements/7_Requisiti}
+
+%-------------------------
+
+\part{Documento di Design Software}
+
+\chapter{Introduzione}
+\include{Chapters/Software_Design/1_Introduzione_al_Design}
+
+\chapter{System Design}
+\include{Chapters/Software_Design/2_Architettura_del_Sistema}
+
+\chapter{Database}
+\include{Chapters/Software_Design/3_Design_del_Database}
+
+\chapter{Backend}
+\include{Chapters/Software_Design/5_Design_del_Backend}
+
+\chapter{Frontend}
+\include{Chapters/Software_Design/6_Design_del_Frontend}
+
+\chapter{Servizi esterni}
+\include{Chapters/Software_Design/7_Servizi_esterni}
+
+\chapter*{}
+\listoffigures
+
+\chapter*{}
+\listoftables
+
+\end{document}

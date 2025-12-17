@@ -1,0 +1,618 @@
+\section{Tecnologie utilizzate}
+\begin{itemize}
+    \item \href{https://adoptium.net/temurin/releases?version=21}{Java 21}: linguaggio di programmazione ampiamente utilizzato per applicazioni di ogni tipo in ambito industriale per la sua sicurezza, portabilità e per l'enforcement del paradigma object oriented, dotato di numerose librerie e framework in supporto agli sviluppatori. La versione 21 è tra le piú recenti ad avere long term support.
+    \item \href{https://maven.apache.org/}{Maven}: build tool per la gestione delle dipendenze.
+    \item \href{https://spring.io/projects/spring-boot}{Spring Boot}: framework opinionated di semplice configurazione che incoraggia l'utilizzo di best practice come la dependency injection. Include numerosi componenti: 
+        \begin{itemize}
+            \item \href{https://docs.spring.io/spring-framework/reference/web/webmvc.html}{Spring Web MVC}: framework web nato per supportare lo sviluppo di applicazioni con architettura model-view-controller, ma molto utilizzato anche per backend stateless. Offre a disposizione strumenti per realizzare facilmente le API REST.
+            \item \href{https://hibernate.org/}{Hibernate}: ORM che implementa le specifiche di Jakarta EE per l'interazione con la base di dati (in particolare, quelle di Jakarta Persistence, o JPA).
+            \item \href{https://tomcat.apache.org/}{Apache Tomcat}: server web che implementa le specifiche web di Jakarta EE. Utilizza un pool di thread per servire richieste concorrenti. Degno di nota è il fatto che Java 21 permette l'utilizzo di thread virtuali: i thread vengono creati solo sulla Java Virtual Machine, ma sará poi questa a decidere se mapparli a nuovi thread creati sul sistema operativo reale. Questo permette di ottenere un comportamento simile a quello del single threaded event loop, solitamente piú indicato per applicazioni che si limitano a eseguire semplici operazioni CRUD: non vengono necessariamente creati thread reali per ogni richiesta, ottenendo una migliore scalabilitá sul numero di utenti.
+        \end{itemize}
+    \item \href{https://projectlombok.org/}{Project Lombok}: libreria per la riduzione del boilerplate, permette di generare automaticamente getter, setter, costruttori, validazione dell'input e molto altro. 
+    \item \href{https://www.red-gate.com/products/flyway/community/}{Flyway}: Strumento per gestire le migrazioni del database: permette di versionare gli script SQL, applicando automaticamente quelli nuovi, e di definire script riutilizzabili, comodi per popolare il database con dati da utilizzare in fase di test.
+\end{itemize}
+
+\section{Object design}
+Il backend segue un'architettura a strati aperta: ogni layer puó utilizzare le funzionalitá offerte da tutti gli strati sottostanti.
+\begin{figure}
+    \centering
+    \includegraphics[width=0.5\linewidth]{Figures/object-architecture.png}
+    \caption{Backend - layered architecture}
+    \label{fig:object-design}
+\end{figure}
+
+\subsection{Model}
+Lo strato piú basso è dato dal package model, nel quale sono definite le entitá che richiedono persistenza.
+\newline
+I decoratori di JPA permettono di definire constraint per un determinato attributo, come quello di chiave primaria. Utilizzando un ORM, è possibile generare automaticamente lo schema del database, oppure per validare che esso sia conforme ai decoratori, fermando l'esecuzione dell'applicazione in caso di esito negativo.
+
+\subsubsection{Utenti}
+Per ottimizzare le ricerche, migliorare la sicurezza e favorire manutenibilitá ed estensibilitá, è stata creata una classe relativa a ogni diversa tipologia di utenti.
+Tuttavia, la modifica del ruolo di un utente in questo modo rappresenta una sfida.
+L'ereditarietà delle classi, utile per evitare ridondanza nella scrittura di codice e per ottenere comportamenti polimorfici, non puó essere mappata esattamente sul modello relazionale.
+In particolare, se col modello relazionale è possibile "estendere" un'entitá a una sua specializzazione, popolando un'altra tabella che faccia riferimento alla prima tramite una chiave esterna, il paradigma object oriented non prevede la possibilità di "promuovere" un oggetto di una classe a una sua specializzazione: è solo possibile creare un nuovo oggetto della classe desiderata, i cui dati relativi alla superclasse siano funzionalmente identici a quelli dell'oggetto che si desiderava promuovere, ed eventualmente cancellare l'oggetto precedente.
+\newline
+Quando l'ORM mappa le classi del model alle entitá del database, permettendo al programmatore di utilizzare gli oggetti in memoria come un'estensione naturale dei dati salvati sul disco invece che una loro semplice rappresentazione, viene imposto un vincolo al modello relazionale, obbligando il programmatore a rispettare i limiti dell'object orientation anche con il database. Ad esempio, per promuovere un utente, sarebbe necessario eliminarlo e ricrearlo col nuovo ruolo.
+\newline
+Questo vincolo puó essere superato tramite l'uso di una query nativa, che andrebbe peró a minare uno dei vantaggi principali di un ORM, cioé l'astrazione dal database specifico utilizzato.
+\newline
+La soluzione è stata data dal principio \textit{composition over inheritance}.
+Classi che prevedono meccanismi di promozione sono state implementate non come estensioni delle loro superclassi, ma come implementazioni di un'interfaccia comune che contengono un attributo che faccia riferimento al loro "padre".
+\newline
+Tale soluzione è in accordo con il \textit{principio di sostituzione di Liskov}, che suggerisce di utilizzare l'ereditarietà solo quando il comportamento delle sottoclassi non è sensibilmente diverso da quello delle superclassi, preferendo l'utilizzo di composizione e interfacce comuni in tutti gli altri casi.
+\newline
+La composizione è molto piú semplice da mappare al modello relazionale rispetto all'ereditarietá: l'ORM lo fa automaticamente, associando l'attributo a una foreign key.
+Tuttavia, un suo svantaggio è l'aumento del boilerplate.
+Infatti, assumendo che entrambe le classi vogliano implementare la stessa interfaccia, con l'ereditarietá è possibile lasciare che il figlio erediti le implementazioni del padre.
+Con la composizione, è necessario che la classe abbia una sua implementazione dei metodi dell'interfaccia.
+\newline
+Questo problema è risolto da Lombok, tramite il meccanismo \textit{delegate}. Tramite lombok, è possibile delegare a un attributo che implementa un'interfaccia la realizzazione della stessa nella classe che lo possiede. Si potranno ora utilizzare i metodi dell'interfaccia con la classe in questione, che chiamerá il metodo corrispondente per l'attributo delegato. Questo meccanismo permette di evitare ridondanza, ridurre il boilerplate ed ottenere comunque un comportamento polimorfico grazie all'interfaccia comune.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\linewidth]{Figures/UML/model-users.png}
+    \caption{Class diagram - users model}
+    \label{fig:model-users}
+\end{figure}
+
+\subsubsection{Inserzioni}
+Per le inserzioni, non essendo necessario implementare meccanismi di promozione, è stato sufficiente utilizzare l'ereditarietá. Un'interfaccia comune a tutte le inserzioni, che definisce le operazioni base, viene estesa da altre due che definiscono operazioni specifiche per inserzioni dotate di prezzo (come quelle in vendita) o di affitto (come quelle in affitto o, in futuro, le case vacanza). Una classe astratta implementa le funzionalitá comuni, mentre classi concrete si limitano a implementare le operazioni specifiche per il loro tipo. Attributi non essenziali utilizzati per le ricerche sono gestiti da una classe separata, InsertionDetails, che puó essere facilmente modificata senza compromettere l'entità principale. Attraverso l'annotazione "Embeddable", gli attributi di questa classe saranno mappati dall'ORM come colonne dell'entità che la include.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\linewidth]{Figures/UML/model-insertions.png}
+    \caption{Class diagram - insertions model}
+    \label{fig:model-insertions}
+\end{figure}
+
+\subsubsection{Ricerche salvate}
+Le ricerche salvate contengono come attributi i campi che l'utente puó utilizzare come filtri per eseguire la ricerca. Sono anch'esse organizzate per ereditarietà in base alla tipologia di inserzione che si intende cercare.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.5\linewidth]{Figures/UML/model-savedsearches.png}
+    \caption{Class diagram - saved searches model}
+    \label{fig:model-savedsearches}
+\end{figure}
+
+\subsection{DTO}
+Il pattern DTO permette di definire interfacce di comunicazione con l'esterno, senza esporre tutti i dati in uso dall'entitá del model.
+I DTO devono essere semplici classi di trasferimento di dati, senza alcuna logica, con attributi relativi ai soli dati di un'entità che si intende scambiare con l'esterno.
+Sono definiti DTO diversi per le richieste e le risposte per ogni entitá. È stato anche definito un DTO per risultati di una ricerca, che si limita a riportare l'id dell'inserzione e la posizione affinché venga visualizzata correttamente sulla mappa. Un DTO "me" contiene le informazioni dell'utente che invia la richiesta.
+
+\subsection{Repository}
+Grazie alle tecnologie utilizzate, non è necessario implementare manualmente i DAO: il framework Spring Boot favorisce l'utilizzo del pattern repository per astrarre i meccanismi di accesso ai dati. Una volta definita un'interfaccia che estenda \textit{JpaRepository<T><ID>} indicando come generics un'entità del model e il tipo della sua chiave primaria, il framework crea automaticamente un'implementazione che fornisce le operazioni CRUD piú semplici basandosi sul nome dei metodi.
+\newline
+È possibile, per operazioni piú complesse, definire la query da utilizzare nel linguaggio JPQL, che viene tradotto automaticamente nel dialetto di SQL utilizzato dal DBMS in uso (specificato nel file di configurazione di Spring). Il framework stesso fornirà ai componenti che fanno uso della repository astratta l'implementazione concreta realizzata.
+\newline
+Il framework permette anche di restituire risultati paginati direttamente dal database, definendo soltanto il tipo di ritorno e un parametro di input con le informazioni di paginazione, e, tramite il meccanismo di DTO projection, di popolare direttamente i DTO relativi alle entità recuperate.
+\newline
+Sono state realizzate interfacce per ogni entità, organizzandole secondo la stessa struttura del model. Alcune repository utilizzano i generics per minimizzare la duplicazione delle dichiarazioni. Ad esempio:
+\begin{center}
+    \begin{lstlisting}[breaklines=true, caption=Utilizzo dei generics nelle repository]
+        BaseInsertionRepository<T extends BaseInsertion> extends JpaRepository<T, Long>}; 
+        
+        InsertionForSaleRepository extends BaseInsertionRepository<InsertionForSale>;
+    \end{lstlisting}
+\end{center}
+
+Per la ricerca, sono state definite query complesse che utilizzano le coordinate geospaziali fornendo risultati entro un certo raggio.
+
+\begin{lstlisting}[breaklines=true, caption=Query JPQL per la ricerca avanzata di inserzioni]
+    @Transactional
+    @Query("SELECT new it.softengunina.dietiestatesbackend.dto.insertionsdto.responsedto.InsertionSearchResultDTO(i.address.location, i.id) FROM #{#entityName} i " +
+            "LEFT JOIN i.tags t ON (:tagCount > 0 AND t.name in :tags) " +
+            "WHERE function('ST_DWithin', i.address.location, function('ST_SetSRID', function('ST_MakePoint', :#{#req.lng}, :#{#req.lat}), 4326), :#{#req.distance}) = true " +
+            "AND (:#{#req.minSize} IS NULL OR i.details.size >= :#{#req.minSize}) " +
+            "AND (:#{#req.minNumberOfRooms} IS NULL OR i.details.numberOfRooms >= :#{#req.minNumberOfRooms}) " +
+            "AND (:#{#req.maxFloor} IS NULL OR i.details.floor <= :#{#req.maxFloor}) " +
+            "AND (:#{#req.hasElevator} IS NULL OR i.details.hasElevator = :#{#req.hasElevator}) " +
+            "GROUP BY i.id, i.address.location " +
+            "HAVING :tagCount = 0 OR COUNT(t) = :tagCount")
+    Page<InsertionSearchResultDTO> search(@Param("req")SearchRequestDTO req, Set<String> tags, Integer tagCount, Pageable pageable);
+\end{lstlisting}
+
+\subsection{Visitor}
+L'architettura layered vuole che il model non sia a conoscenza di altri package.
+Tale architettura ha enormi benefici per la manutenibilità del codice. Tuttavia, questo rende difficile istanziare un DTO quando non si conosce la natura specifica dell'oggetto che si vuole serializzare. In queste circostanze si desidera un comportamento polimorfico dato dall'oggetto stesso che viene serializzato.
+\newline
+Il pattern visitor permette di astrarre il comportamento polimorfico di una classe dalla concreta implementazione di tale comportamento.
+Un'interfaccia "visitor" definisce diversi metodi "visit" che tramite overloading prendono in input un oggetto di una delle classi da cui si desidera ottenere il comportamento polimorfico.
+Le classi del model definiscono un metodo "accept" che prende in input il visitor e richiamano il metodo loro relativo passando come parametro "this".
+L'implementazione concreta del visitor penserà a eseguire le operazioni necessarie. 
+Il controller potrà utilizzare l'implementazione concreta per passarla agli oggetti del model.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.9\linewidth]{Figures/UML/visitor-insertionsdto.png}
+    \caption{Class diagram - pattern visitor per le inserzioni}
+    \label{fig:visitor-insertionsdto}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.9\linewidth]{Figures/UML/visitor-savedsearches.png}
+    \caption{Class diagram - pattern visitor per le ricerche salvate}
+    \label{fig:visitor-savedsearches}
+\end{figure}
+
+Per le \hyperref[fig:visitor-insertionsdto]{inserzioni}, il pattern visitor è stato utilizzato per produrre il DTO specifico quando non si conosce il tipo concreto dell'inserzione. In questo modo è possibile restituire pagine di DTO con le informazioni specifiche di ogni inserzione in base al proprio tipo.
+Per le \hyperref[fig:visitor-savedsearches]{ricerche salvate}, è stato utilizzato per ottenere i risultati aggiornati in tempo reale di una ricerca eseguita con gli stessi criteri di quella salvata.
+
+\subsection{Factory}
+Il pattern factory permette di creare oggetti che implementano una stessa interfaccia senza esplicitarne il tipo.
+Un'interfaccia "Abstract Factory" definisce metodi per la creazione di oggetti che implementano un'interfaccia. Le sue diverse implementazioni produrranno oggetti concreti di tipo diverso.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.9\linewidth]{Figures/UML/factory-insertions.png}
+    \caption{Class diagram - pattern factory per le inserzioni}
+    \label{fig:factory-insertions}
+\end{figure}
+
+Questo pattern è stato utilizzato per la creazione di \hyperref[fig:factory-insertions]{inserzioni} a partire dalle richieste HTTP ricevute dagli agenti immobiliari.
+
+
+\subsection{Service}
+Il service layer utilizza quindi le repository e le entità del model per implementare la logica di business necessaria.
+Il framework permette di definire ogni servizio come un bean che può essere iniettato negli altri componenti in maniera automatica.
+I servizi realizzati sono:
+\begin{itemize}
+    \item UserPromotionService: gestisce la logica di promozione degli utenti.
+    \item TokenService: utilizza Spring Security per ottenere le informazioni dell'utente che effettua una richiesta dal JWT.
+    \item NotificationsService: interfaccia che definisce i metodi per l'invio di notifiche e la modifica delle preferenze. L'implementazione concreta, NotificationsServiceImpl, fa uso dell'SDK di AWS per comunicare con il servizio esterno SNS. Tuttavia, l'utilizzo dell'interfaccia e del meccanismo di dependency injection fornito da Spring permettono di ridurre l'accoppiamento dal provider esterno.
+\end{itemize}
+
+\subsection{Listener}
+I listener sono uno strumento fornito da JPA per ottenere una forma di programmazione orientata agli aspetti: una classe puó registrarne un'altra che definisca alcuni comportamenti da eseguire prima o dopo determinate azioni. In questo modo si ottiene maggiore coesione, spostando i side effect in classi separate, rendendoli piú facile da modificare. I listener, in particolare, sono pensati per ottenere un comportamento simile ai trigger di un DBMS. Vengono registrati da classi del model ed eseguono azioni prima o dopo determinate operazioni CRUD.
+\newline
+I listener sono stati utilizzati per l'invio automatico di notifiche quando viene salvata un'inserzione nel database, per creare automaticamente le preferenze di notifica di un utente con i valori di default quando questi si autentica per la prima volta, per creare automaticamente nuovi tag quando un'inserzione viene pubblicata e per garantire la coerenza dei ruoli dell'utente in seguito a una promozione.
+
+\subsection{Interceptor}
+Gli interceptor di Spring agiscono in modo simile ai middleware di framework quali express.
+Permettono di definire azioni da effettuare in seguito a una richiesta ricevuta, prima che questa arrivi al controller. Possono essere utilizzati per estrarre comportamenti comuni a diverse route. In particolare, in questa applicazione effettuano recupero dei dati relativi all'utente che effettua la richiesta.
+
+\subsection{Controller}
+Il controller rappresenta l'ultimo strato dell'architettura e definisce le operazioni da effettuare all'arrivo di una richiesta HTTP.
+È stata definita una classe diversa per ogni risorsa.
+Le route relative alle risorse principali sono:
+\begin{itemize}
+    \item "/api/me", previa autenticazione, gestisce i dati relativi all'utente che invia la richiesta, come permessi e preferenze di notifica. Disponibili metodi GET e POST (utilizzato dopo la prima autenticazione).
+    \item "/api/insertions", per le inserzioni: sul path principale è solo possibile effettuare ricerche (GET), mentre su path dedicati "/for-sale" e "/for-rent" è possibile sia filtrare le ricerche per tipologia (GET) sia caricarne di nuove (POST). Aggiungere l'id di un'inserzione al path base permette di visualizzarne tutti i dettagli (GET).
+    \item "/api/saved-searches", previa autenticazione, permette di ottenere le proprie ricerche salvate (GET) o di crearne una nuova (POST). Esattamente come per le inserzioni è possibile specificare tra "/for-sale" e "/for-rent" (POST). Inoltre è possibile eliminare una ricerca salvata in base all'id (DELETE), oppure utilizzare "/{id}/execute" per eseguire una ricerca con gli stessi parametri di quella salvata con l'id specificato (GET).
+    \item "/api/notifications-preferences", previa autenticazione, permette di modificare le proprie preferenze di notifica (PUT).
+\end{itemize}
+Il backend definisce anche un endpoint specifico dove è possibile visualizzare la documentazione openAPI degli endpoint REST tramite swagger-ui, al path "/api/swagger-ui".
+
+
+\newpage
+
+\section{Versioning}
+Per il versionamento del codice è stato utilizzato git, con repository remota su GitHub, disponibile al seguente indirizzo: \newline \url{https://github.com/SoftEngUniNA-Amato-Ruggiero/DietiEstates-Backend}.
+\newline
+Oltre a rappresentare la soluzione piú utilizzata in ambito industriale, GitHub permette di definire azioni da eseguire ad ogni push, utilizzate per eseguire la scansione del codice tramite strumenti di analisi automatica nella pipeline CI/CD.
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\linewidth]{Figures/GitHub/commits-over-time.png}
+    \caption{GitHub - Cronologia dei commit}
+    \label{fig:github-commits-over-time}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\linewidth]{Figures/GitHub/code-frequency.png}
+    \caption{GitHub - Code Frequency}
+    \label{fig:github-code-frequency}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\linewidth]{Figures/GitHub/actions-usage-metrics.png}
+    \caption{GitHub - Metriche di uso delle GitHub Actions}
+    \label{fig:github-actions-usage-metrics}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\linewidth]{Figures/GitHub/actions-performance-metrics.png}
+    \caption{GitHub - Metriche di performance delle GitHub Actions}
+    \label{fig:github-actions-performance-metrics}
+\end{figure}
+
+\newpage
+
+\section{Code inspection}
+Per la code inspection è stato utilizzato il tool di analisi automatica SonarQube.
+\newline
+Per favorire un approccio \textit{clean as you code}, una prima analisi viene effettuata da un linter direttamente nll'IDE: SonarQube for IDE. Tale linter blocca i push alla repository qualora riscontri problemi analizzando il nuovo codice.
+\newline
+Una volta inviato il codice alla repository, è stata configurata una github action che esegue la scansione di tutto il codice tramite il servizio SonarQube Cloud, che offre un'istanza cloud del software di analisi SonarQube liberamente utilizzabile da tutte le repository pubbliche.
+\newline
+Le regole per l'analisi sono quelle di default.
+\newline
+La github action è configurata anche per misurare la coverage dei test, e l'analisi è configurata per segnalare un fallimento qualora la copertura del nuovo codice dovesse risultare inferiore all'80\%.
+\newline
+La misurazione della coverage avviene tramite il plugin \href{https://www.jacoco.org/jacoco/}{JaCoCo} (Java Code Coverage tools).
+\newline
+Dal report non sono emersi problemi. I risultati sono consultabili al seguente link:
+\newline
+\url{https://sonarcloud.io/summary/overall?id=softengunina-amato-ruggiero_dietiestates-backend&branch=main}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1\linewidth]{Figures/sonarqube-report-backend.png}
+    \caption{Report di SonarQube}
+    \label{fig:sonarqube-report-backend}
+\end{figure}
+
+Oltre a SonarQube è stato anche utilizzato il tool di analisi Qodana, il cui linter era giá incluso con l'IDE utilizzato (IntelliJ IDEA).
+Per l'analisi di Qodana sono state utilizzate le regole di default date dal profilo "qodana.recommended" e il linter gratuito "jetbrains/qodana-jvm-community:2025.2". \newline
+Dal report non sono emersi problemi. I risultati sono consultabili al seguente link: \newline 
+\url{https://qodana.cloud/projects/dXeRo/reports/gEmNV4}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.95\linewidth]{Figures/qodana-report-backend.png}
+    \caption{Report di Qodana}
+    \label{fig:qodana-report-backend}
+\end{figure}
+
+
+\section{Test}
+Per massimizzare la copertura di righe di codice testate, è stata adottata la metodologia di test white box\footnote{Essendo la complessità del testing white box legata al numero di branch piuttosto che a quello di parametri di input, si è deciso di presentare come casi di test non banali metodi con almeno un branch.}, con approccio branch coverage.
+% TODO: verifica che non sia addirittura un modified condition coverage (testa tutte le condizioni che possono portare a un branch, non solo una condizione che esegue il branch)
+Tale tecnica puó costringere il programmatore che effettua una modifica al codice a modificare anche i test, riducendo la manutenibilità, ma risulta in accordo con il principio \textit{clean as you code}, che prevede la scrittura di test per ogni aggiunta al codice.
+\newline
+Sono stati eseguiti test unitari per ogni componente del software in isolamento, utilizzando mockito per simulare le dipendenze, eccezion fatta per il controller.
+\newline
+Per quest'ultimo sono stati realizzati test di integrazione, sfruttando una migrazione di Flyway per popolare il database con un set di dati iniziali in uno schema apposito e l'iniezione automatica delle dipendenze tramite il framework Spring, salvo per i casi in cui era necessario utilizzare API di un provider esterno (come quello delle notifiche), per i quali si è deciso di utilizzare comunque dei mock.
+\newline
+Di seguito, alcuni dei metodi testati, il grafo del flusso di controllo corrispondente e i test in JUnit.
+
+
+\subsection{promoteToBusinessUser}
+Test suite per il metodo di UserPromotionService che si occupa della logica di promozione di utenti da BaseUser a BusinessUser.
+
+\begin{lstlisting}[breaklines=true]
+public BusinessUser promoteToBusinessUser(@NonNull BaseUser user, @NonNull RealEstateAgency agency) {
+    BusinessUser businessUser;
+    Optional<BusinessUser> businessUserOpt = businessUserRepository.findById(user.getId());
+    if (businessUserOpt.isEmpty()) {
+        businessUser = businessUserRepository.save(new BusinessUser(user, agency));
+    } else {
+        businessUser = businessUserOpt.get();
+        if (!businessUser.getAgency().equals(agency)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "User works for a different agency");
+        }
+    }
+    return businessUser;
+}
+\end{lstlisting}
+
+Sono stati definiti i seguenti test per coprire i branch del \hyperref[fig:promoteToBusinessUser]{CFG}:
+\begin{itemize}
+    \item promoteToBusinessUser\_WhenBusinessUserIsEmpty
+    \item promoteToBusinessUser\_WhenBUserFoundAgencyMatches
+    \item promoteToBusinessUser\_WhenBUserFoundAgencyNotMatch
+\end{itemize}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\linewidth]{Figures/CFG/promoteToBusinessUser.png}
+    \caption{ CFG - promoteToBusinessUser }
+    \label{fig:promoteToBusinessUser}
+\end{figure}
+
+\begin{lstlisting}[breaklines=true]
+@Test
+void promoteToBusinessUser_WhenBusinessUserIsEmpty() {
+    Mockito.when(businessUserRepository.findById(user.getId()))
+            .thenReturn(Optional.empty());
+    Mockito.when(businessUserRepository.save(Mockito.any(BusinessUser.class)))
+            .thenAnswer(invocation -> invocation.getArgument(0));
+
+    BusinessUser businessUser = userPromotionService.promoteToBusinessUser(user, agency);
+
+    assertAll(
+            () -> assertEquals(user.getUsername(), businessUser.getUsername()),
+            () -> assertEquals(user.getCognitoSub(), businessUser.getCognitoSub()),
+            () -> assertEquals(agency, businessUser.getAgency())
+    );
+}
+
+@Test
+void promoteToBusinessUser_WhenBUserFoundAndAgencyMatches() {
+    Mockito.when(businessUserRepository.findById(user.getId()))
+            .thenReturn(Optional.of(new BusinessUser(user, agency)));
+
+    BusinessUser businessUser = userPromotionService.promoteToBusinessUser(user, agency);
+
+    assertAll(
+            () -> assertEquals(user.getUsername(), businessUser.getUsername()),
+            () -> assertEquals(user.getCognitoSub(), businessUser.getCognitoSub()),
+            () -> assertEquals(agency, businessUser.getAgency())
+    );
+}
+
+@Test
+void promoteToBusinessUser_WhenBUserFoundAgencyNotMatch() {
+    RealEstateAgency differentAgency = new RealEstateAgency("11111111", "Different Agency");
+    Mockito.when(businessUserRepository.findById(user.getId()))
+            .thenReturn(Optional.of(new BusinessUser(user, differentAgency)));
+
+    assertThrows(ResponseStatusException.class,
+            () -> userPromotionService.promoteToBusinessUser(user, agency)
+    );
+}
+\end{lstlisting}
+
+
+\subsection{publishMessageToTopic}
+Test suite per il metodo di NotificationsServiceImpl che si occupa di postare un messaggio sul topic delle notifiche.
+
+\begin{lstlisting}[breaklines=true]
+public void publishMessageToTopic(@NonNull String message,
+                                  Map<String, String> attributes) {
+    if (attributes == null) {
+        attributes = Collections.emptyMap();
+    }
+
+    Map<String, MessageAttributeValue> messageAttributes = attributes.entrySet().stream()
+            .collect(Collectors.toMap(Map.Entry::getKey, NotificationsServiceImpl::buildMessageAttribute));
+
+    snsService.withClient(client -> snsService.pubTopic(client, message, messageAttributes));
+}
+\end{lstlisting}
+
+Sono stati definiti i seguenti test per coprire i branch del \hyperref[fig:publishMessageToTopic]{CFG}:
+\begin{itemize}
+    \item publishMessageToTopic
+    \item publishMessageToTopic\_WhenAttributesIsNull
+\end{itemize}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\linewidth]{Figures/CFG/publishMessageToTopic.png}
+    \caption{ CFG - publishMessageToTopic }
+    \label{fig:publishMessageToTopic}
+\end{figure}
+
+\begin{lstlisting}[breaklines=true]
+@Test
+void publishMessageToTopic() {
+    String message = "message";
+    Map<String, String> attributes = Map.of("key", "value");
+
+    AtomicBoolean pubTopicCalled = new AtomicBoolean(false);
+    Mockito.when(snsService.pubTopic(Mockito.eq(snsClient), Mockito.any(), Mockito.any()))
+            .thenAnswer(i -> {
+                pubTopicCalled.set(true);
+                return null;
+            });
+
+    notificationsService.publishMessageToTopic(message, attributes);
+
+    assertTrue(pubTopicCalled.get());
+}
+
+@Test
+void publishMessageToTopic_WhenAttributesIsNull() {
+    String message = "message";
+
+    AtomicBoolean pubTopicCalled = new AtomicBoolean(false);
+    Mockito.when(snsService.pubTopic(Mockito.eq(snsClient), Mockito.any(), Mockito.any()))
+            .thenAnswer(i -> {
+                pubTopicCalled.set(true);
+                return null;
+            });
+
+    notificationsService.publishMessageToTopic(message, null);
+
+    assertTrue(pubTopicCalled.get());
+}
+\end{lstlisting}
+
+
+\subsection{enableEmailSubscription}
+Test suite per il metodo di NotificationsServiceImpl che si occupa di attivare la sottoscrizione email di un utente ai messaggi postati sul topic delle notifiche.
+
+\begin{lstlisting}[breaklines=true]
+public void enableEmailSubscription(@NonNull NotificationsPreferences prefs) throws EmailNotificationsPreferencesUpdateException {
+    if (prefs.isEmailNotificationsEnabled()) {
+        return;
+    }
+    String email = prefs.getUser().getUsername();
+
+    snsService.withClient(client -> {
+        SubscribeResponse res = snsService.subEmail(client, email);
+        if (res.sdkHttpResponse().isSuccessful()) {
+            prefs.setSubscriptionArn(res.subscriptionArn());
+            log.info("User {} subscribed to email notifications", email);
+        } else {
+            log.error("Error subscribing to email notifications: {}", res.sdkHttpResponse());
+            throw new EmailNotificationsPreferencesUpdateException("Error subscribing to email notifications");
+        }
+    });
+}
+\end{lstlisting}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.5\linewidth]{Figures/CFG/enableEmailSubscription.png}
+    \caption{ CFG - enableEmailSubscription }
+    \label{fig:enableEmailSubscription}
+\end{figure}
+
+Sono stati definiti i seguenti test per coprire i branch del \hyperref[fig:enableEmailSubscription]{CFG}:
+\begin{itemize}
+    \item enableEmailSubscription
+    \item enableEmailSubscription\_WhenUnsuccesfulResponse
+    \item enableEmailSubscription\_WhenAlreadyEnabled
+\end{itemize}
+
+\begin{lstlisting}[breaklines=true]
+@Test
+void enableEmailSubscription() {
+    BaseUser user = new BaseUser("email", "sub");
+    NotificationsPreferences prefs = new NotificationsPreferences(user);
+    prefs.setSubscriptionArn("");
+
+    SubscribeResponse res = buildSuccesfulSubscribeResponse();
+
+    Mockito.when(snsService.subEmail(snsClient, prefs.getUser().getUsername()))
+            .thenReturn(res);
+
+    assertDoesNotThrow(() -> notificationsService.enableEmailSubscription(prefs));
+
+    assertAll(
+            () -> assertTrue(prefs.isEmailNotificationsEnabled()),
+            () -> assertEquals("subscriptionArn", prefs.getSubscriptionArn())
+    );
+}
+
+@Test
+void enableEmailSubscription_WhenUnsuccesfulResponse() {
+    BaseUser user = new BaseUser("email", "sub");
+    NotificationsPreferences prefs = new NotificationsPreferences(user);
+    prefs.setSubscriptionArn("");
+
+    SubscribeResponse res = buildUnsuccesfulSubscribeResponse();
+
+    Mockito.when(snsService.subEmail(snsClient, prefs.getUser().getUsername()))
+            .thenReturn(res);
+
+    assertThrows(EmailNotificationsPreferencesUpdateException.class, () -> notificationsService.enableEmailSubscription(prefs));
+
+    assertAll(
+            () -> assertFalse(prefs.isEmailNotificationsEnabled()),
+            () -> assertEquals("", prefs.getSubscriptionArn())
+    );
+}
+
+@Test
+void enableEmailSubscription_WhenAlreadyEnabled() {
+    BaseUser user = new BaseUser("email", "sub");
+    NotificationsPreferences prefs = new NotificationsPreferences(user);
+    prefs.setSubscriptionArn("subscriptionArn");
+
+    assertDoesNotThrow(() -> notificationsService.enableEmailSubscription(prefs));
+
+    assertAll(
+            () -> assertTrue(prefs.isEmailNotificationsEnabled()),
+            () -> assertEquals("subscriptionArn", prefs.getSubscriptionArn())
+    );
+}
+\end{lstlisting}
+
+
+\subsection{disableEmailSubscription}
+Test suite per il metodo di NotificationsServiceImpl che si occupa di disattivare la sottoscrizione email di un utente ai messaggi postati sul topic delle notifiche.
+
+\begin{lstlisting}[breaklines=true]
+public void disableEmailSubscription(@NonNull NotificationsPreferences prefs) throws EmailNotificationsPreferencesUpdateException {
+    if (!prefs.isEmailNotificationsEnabled()) {
+        return;
+    }
+    String subscriptionArn = prefs.getSubscriptionArn();
+
+    snsService.withClient(client -> {
+        UnsubscribeResponse res = snsService.unsubEmail(client, subscriptionArn);
+        if (res.sdkHttpResponse().isSuccessful()) {
+            prefs.setSubscriptionArn("");
+            log.info("User {} unsubscribed from email notifications", prefs.getUser().getUsername());
+        } else {
+            log.error("Error unsubscribing from email notifications: {}", res.sdkHttpResponse());
+            throw new EmailNotificationsPreferencesUpdateException("Error unsubscribing from email notifications");
+        }
+    });
+}
+\end{lstlisting}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.5\linewidth]{Figures/CFG/disableEmailSubscription.png}
+    \caption{ CFG - disableEmailSubscription }
+    \label{fig:disableEmailSubscription}
+\end{figure}
+
+Sono stati definiti i seguenti test per coprire i branch del \hyperref[fig:disableEmailSubscription]{CFG}:
+\begin{itemize}
+    \item disableEmailSubscription
+    \item disableEmailSubscription\_WhenUnsuccesfulResponse
+    \item disableEmailSubscription\_WhenAlreadyDisabled
+\end{itemize}
+
+\begin{lstlisting}
+@Test
+void disableEmailSubscription() {
+    BaseUser user = new BaseUser("email", "sub");
+    NotificationsPreferences prefs = new NotificationsPreferences(user);
+    prefs.setSubscriptionArn("subscriptionArn");
+
+    UnsubscribeResponse res = buildSuccesfulUnsubscribeResponse();
+
+    Mockito.when(snsService.unsubEmail(snsClient, prefs.getSubscriptionArn()))
+            .thenReturn(res);
+
+    assertDoesNotThrow(() -> notificationsService.disableEmailSubscription(prefs));
+
+    assertAll(
+            () -> assertFalse(prefs.isEmailNotificationsEnabled()),
+            () -> assertEquals("", prefs.getSubscriptionArn())
+    );
+}
+
+@Test
+void disableEmailSubscription_WhenUnsuccesfulResponse() {
+    BaseUser user = new BaseUser("email", "sub");
+    NotificationsPreferences prefs = new NotificationsPreferences(user);
+    prefs.setSubscriptionArn("subscriptionArn");
+
+    UnsubscribeResponse res = buildUnsuccesfulUnsubscribeResponse();
+
+    Mockito.when(snsService.unsubEmail(snsClient, prefs.getSubscriptionArn()))
+            .thenReturn(res);
+
+    assertThrows(EmailNotificationsPreferencesUpdateException.class, () -> notificationsService.disableEmailSubscription(prefs));
+
+    assertAll(
+            () -> assertTrue(prefs.isEmailNotificationsEnabled()),
+            () -> assertEquals("subscriptionArn", prefs.getSubscriptionArn())
+    );
+}
+
+@Test
+void disableEmailSubscription_WhenAlreadyDisabled() {
+    BaseUser user = new BaseUser("email", "sub");
+    NotificationsPreferences prefs = new NotificationsPreferences(user);
+    prefs.setSubscriptionArn("");
+
+    assertDoesNotThrow(() -> notificationsService.disableEmailSubscription(prefs));
+
+    assertAll(
+            () -> assertFalse(prefs.isEmailNotificationsEnabled()),
+            () -> assertEquals("", prefs.getSubscriptionArn())
+    );
+}
+\end{lstlisting}
+
+\newpage
+
+\section{Deployment}
+Per eseguire l'applicazione è sufficiente disporre di un'implementazione Java runtime environment compatibile con la versione 21 del linguaggio. Sono disponibili due profili di Spring: uno, "dev" (profilo di default), che utilizza un database locale; l'altro, "prod", che utilizza il database sul cloud.
+
+\subsection{Docker}
+Il backend puó essere eseguito come container tramite Docker (o un'altra piattaforma di containerizzazione). Il dockerfile si articola in due fasi:
+\begin{enumerate}
+    \item Un container "build" viene creato a partire dall'immagine "eclipse-temurin:21-jdk", contenente un'implementazione della jdk 21. Il codice sorgente viene copiato nel container e compilato per ottenere il Jar.
+    \item Un secondo container viene creato a partire dall'immagine "eclipse-temurin:21-jre", contenente il solo java runtime environment, e dunque più leggero. Il Jar viene copiato in questo container da quello "build", per poi essere eseguito. 
+\end{enumerate}
+L'immagine è pubblicamente disponibile su Docker Hub al seguente link:
+\newline
+\url{https://hub.docker.com/r/gyus3/dietiestatesbackend-app}.
+\newline
+
+Qualora si desideri eseguire il software esclusivamente in locale, è disponibile il file di configurazione di docker-compose che permette di avviare il backend e il database da cui dipende. Il file definisce due servizi (app e db), un volume con i dati del database e segreti per la password del database e le credenziali di AWS.
+\newline
+In alternativa, è disponibile anche un file di configurazione di docker-compose pensato per eseguire l'applicazione con il profilo "prod". Tale configurazione non prevede l'utilizzo di un container per il database, utilizzando quello remoto, e si assicura di impostare la variabile di ambiente "SPRING\_PROFILES\_ACTIVE" a "prod". 
+\newline
+
+\subsection{Amazon ECS}
+L'immagine ottenuta dal dockerfile viene eseguita con il profilo "prod" su Amazon Elastic Container Service, un servizio di cloud computing che offre una piattaforma di orchestrazione di container. Tale servizio offre scalabilitá automatica delle risorse messe a disposizione e meccanismi di fallback per favorire la tolleranza agli errori garantendo un'elevata disponibilità del backend.

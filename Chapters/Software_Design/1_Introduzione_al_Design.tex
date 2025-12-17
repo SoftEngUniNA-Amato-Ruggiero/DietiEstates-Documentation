@@ -1,0 +1,35 @@
+\section{Scopo del documento}
+Questo documento descrive le scelte architetturali e implementative adottate per realizzare il sistema DietiEstates25, illustrando come i requisiti funzionali e non funzionali individuati siano stati tradotti in un'architettura software concreta. \\
+Per ogni componente del sistema, vengono fornite le motivazioni delle scelte progettuali, i pattern architetturali applicati e i benefici ottenuti in termini di qualità del codice.
+
+\section{Tipologia di applicazione}
+DietiEstates25 è un'applicazione web single page. La scelta è motivata da diverse ragioni pratiche e tecniche.\\
+Un'applicazione web non richiede installazioni o configurazioni specifiche per il sistema operativo, ma funziona su qualsiasi dispositivo dotato di un browser moderno. Questo permette di raggiungere un pubblico più ampio, sia per ragioni di portabilità (non sará necessario adattare il frontend affinché possa girare su sistemi operativi diversi), sia di usabilità (l'utente non avrà bisogno di installare personalmente il software sul proprio dispositivo).\\
+Considerando la tipologia di utenza target si è giunti alla conclusione che l'utente finale, per cercare alloggi o sistemazioni, preferisce consultare siti web piuttosto che installare software dedicati.\\
+Le modifiche e i miglioramenti vengono distribuiti istantaneamente a tutti gli utenti senza che questi effettuino download o installazioni manuali. Questo semplifica enormemente la manutenzione e permette la correzione tempestiva di eventuali errori.\\
+Infine, le applicazioni web single page semplificano la logica di frontend, fondamentale per la mappa interattiva.
+
+\section{Obiettivi di Design}
+% NOTA
+% FORSE QUESTE COSE ANDREBBERO MESSE NEL CAPITOLO 7 DEL DOCUMENTO DEI REQUISITI?
+% QUI CI VORREBBE SOLO UNA LISTA DELLE QUALITÀ DEL CODICE PIÙ IMPORTANTI CHE HANNO DETERMINATO LE SCELTE IMPLEMENTATIVE, SENZA ENTRARE NEI DETTAGLI DEL PERCHÉ (C'È TUTTO IL DOCUMENTO DEI REQUISITI PER SPIEGARLO)
+
+Alla luce dei requisiti emersi, il design del sistema è stato progettato per seguire i seguenti obiettivi principali:
+
+\textbf{Usabilità}: L'interfaccia deve essere immediatamente comprensibile anche per utenti senza formazione tecnica. Le operazioni comuni (ricerca inserzioni, visualizzazione dettagli di un'inserzione, salvataggio ricerche) devono richiedere il minor numero possibile di passaggi e rimanere consistenti nell'estetica e nel lessico adottato. Le azioni effettuate dagli utenti sono rese possibili solo se valide e mostrano sempre un feedback immediato. L'utente non deve essere costretto a consultare manuali o tutorial per utilizzare il sistema.
+Un utente avanzato intenzionato a effettuare operazioni in modo ancora piú efficiente potrá consultare la documentazione delle API per implementare personalmente script per interagire con il backend nel modo che piú desidera (seguendo una delle euristiche di Nielsen-Molich che consiglia di fornire aiuto e documentazione agli utenti finali).
+
+\textbf{Estendibilità}: Il sistema deve poter accogliere nuove tipologie di inserzioni o di utenti senza cambiare eccessivamente la natura del codice.
+
+\textbf{Manutenibilità}: Il codice deve essere organizzato in modo chiaro e modulare, facilitando l'individuazione e la correzione di bug. La separazione delle responsabilità tra i vari componenti permette di modificare singole parti del sistema senza impattare il resto.
+
+\textbf{Scalabilità}: L'architettura deve permettere di gestire un numero crescente di utenti e inserzioni senza una progressiva diminuzione delle prestazioni. Il backend stateless e la possibilità di replicazione orizzontale garantiscono questa proprietà.
+
+\textbf{Efficienza}: Il sistema non deve saturare né la rete con eccessive richieste né le risorse degli utenti o del server con istruzioni non ottimizzate.
+
+\textbf{Performance}: Il sistema deve essere veloce e reattivo. Le ricerche devono produrre risultati rapidamente, le operazioni devono essere completate nel minor tempo possibile.
+
+\textbf{Affidabilità}: Il sistema deve essere sempre raggiungibile e disporre di elevata tolleranza agli errori.
+%Affidabilitá (uptime, recovery, fault tolerance)
+%Sicurezza
+%Compatibilitá

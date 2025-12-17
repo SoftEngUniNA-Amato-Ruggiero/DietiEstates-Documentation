@@ -1,0 +1,79 @@
+In questa sezione vengono elencati tutti i requisiti funzionali e non funzionali individuati durante la fase di analisi. 
+Essi sono stati classificati per tipologia e per area di competenza, al fine di agevolarne la lettura e la tracciabilità nel processo di sviluppo.
+
+\section{Requisiti Funzionali}
+I seguenti requisiti definiscono il comportamento del sistema e le funzionalità messe a disposizione degli utenti e dei ruoli interni all’applicazione.
+
+\subsection{Accesso e Sicurezza}
+\begin{itemize}
+    \item L’utente può creare un account personale specificando \textit{nome}, \textit{cognome}, \textit{indirizzo e-mail} e \textit{password}, oppure tramite autenticazione di terze parti.
+    \item L’utente può accedere al sistema inserendo e-mail e password o tramite autenticazione di terze parti.
+\end{itemize}
+
+\subsection{Gestione agenzie e Ruoli}
+\begin{itemize}
+    \item Un utente autenticato può registrare una nuova agenzia immobiliare, inserendone il \textit{nome} e l’\textit{IBAN}. Tale azione lo promuove automaticamente al ruolo di manager per la nuova agenzia.
+    \item Un manager può promuovere altri utenti al ruolo di manager della propria agenzia specificando l’indirizzo e-mail, purché non siano già occupati presso un'altra agenzia.
+    \item Un manager può promuovere altri utenti al ruolo di agente immobiliare della propria agenzia specificando l’indirizzo e-mail, purché non siano già occupati presso un'altra agenzia.
+\end{itemize}
+
+\subsection{Gestione inserzioni}
+\begin{itemize}
+    \item Un agente immobiliare può caricare nuove \textit{inserzioni} di proprietà immobiliari, specificandone la tipologia e la posizione esatta, e aggiungendo informazioni opzionali di vario tipo, tra cui tag e descrizione in formato rich text con immagini.
+\end{itemize}
+
+\subsection{Ricerca e Filtri}
+\begin{itemize}
+    \item L’utente può effettuare \textit{ricerche avanzate} di immobili filtrando per parametri quali: tipologia dell’inserzione, dimensioni, numero di stanze, fascia di prezzo.
+    \item L’utente può filtrare i risultati per posizione, specificando un centro e un raggio.
+    \item L’utente può salvare le ricerche effettuate.
+\end{itemize}
+
+\subsection{Sistema di Notifiche}
+\begin{itemize}
+    \item L’utente può selezionare categorie di \textit{notifiche} che desidera ricevere dall'applicativo.
+    \item L’utente può selezionare le modalità di notifica che preferisce.
+\end{itemize}
+
+\section{Requisiti Non Funzionali}
+I requisiti non funzionali specificano vincoli e caratteristiche qualitative del sistema, che ne influenzano l'architettura, le prestazioni e la sicurezza.
+
+\subsection{Architettura e Gestione Dati}
+\begin{itemize}
+    \item Il sistema utilizza un database relazionale per gestire la persistenza dei dati, la loro correttezza e le loro relazioni in maniera efficiente, sicura e affidabile.
+    \item Il database deve fornire supporto a dati geospaziali, per consentire il salvataggio e la ricerca efficiente delle inserzioni in base alla loro posizione.
+    \item L'accesso al database è gestito unicamente dal backend.
+    \item Il backend espone API RESTful per lo scambio di dati.
+\end{itemize}
+
+\subsection{Sicurezza e Autenticazione}
+\begin{itemize}
+    \item L’autenticazione è gestita tramite un provider esterno, per garantire la sicurezza dei dati personali degli utenti.
+    \item Il sistema non deve mai conservare le password degli utenti nel proprio database.
+    \item Il backend deve verificare la firma dei token JWT tramite le chiavi pubbliche del provider esterno.
+    \item Il frontend richiede il JWT al provider esterno, e deve allegarlo come header a ogni richiesta autenticata che intende effettuare al backend.
+\end{itemize}
+
+\subsection{Prestazioni e Affidabilità}
+\begin{itemize}
+    \item Il backend deve garantire un tempo di risposta non superiore a 0.5s per le ricerche di inserzioni.
+    \item Il frontend impone un debounce time di 0.5s tra due ricerche. 
+    \item Il servizio deve essere disponibile almeno nel 99\% del tempo operativo.
+    \item I componenti dell'applicazione sono hostati tramite servizi di cloud computing per garantirne l'elevata disponibilità.
+\end{itemize}
+
+\subsection{Usabilità}
+\begin{itemize}
+    \item L’interfaccia deve essere intuitiva, coerente e conforme ai principi di design responsivo.
+    \item La mappa interattiva deve essere facilmente navigabile e integrata nel flusso di ricerca.
+    \item Il sistema deve essere accessibile da browser desktop e mobile.
+\end{itemize}
+
+\subsection{Manutenibilità ed Estendibilità}
+\begin{itemize}
+    \item Il backend deve poter eseguire in parallelo su diverse istanze, per favorire la scalabilità orizzontale.
+    \item Il codice sorgente deve essere versionato tramite un VCS e hostato su una repository remota.
+    \item Lo schema del database è versionato e aggiornato tramite un database migration tool. 
+    \item La qualità del codice del backend è sottoposta a inspection da strumenti di analisi automatica. Il flusso di CI/CD esegue l'ispezione a ogni commit.
+    \item L'affidabilità del backend è garantita da una test coverage non inferiore all'80\% di righe di codice.
+\end{itemize}

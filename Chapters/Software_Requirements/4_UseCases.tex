@@ -1,0 +1,43 @@
+\section{Introduzione}
+In questa sezione vengono presentati i casi d’uso individuati per la piattaforma \textbf{DietiEstates25}. 
+L’obiettivo dell’analisi è descrivere, in modo formale e sistematico, le principali interazioni tra gli \textbf{attori} (utenti, agenti, manager e sistemi esterni) e il sistema software.
+
+I casi d'uso rappresentano il comportamento osservabile del sistema dal punto di vista dell'utente finale, e costituiscono un punto di riferimento fondamentale per la successiva progettazione architetturale.
+
+\section{Casi d’Uso}
+
+\begin{itemize}
+    \item Un \textbf{Agente Immobiliare} può \textbf{caricare una nuova inserzione per una proprietà immobiliare}, per renderla visibile agli utenti interessati.
+    
+    \item Un \textbf{Utente} può \textbf{cercare inserzioni di proprietà immobiliari},  per trovare quelle che rispecchiano meglio le sue esigenze.
+    % \textbf{Criteri di accettazione}: le inserzioni caricate sul sistema sono visualizzabili su una mappa interattiva tramite una ricerca. I risultati di una ricerca devono essere conformi ai filtri impostati.
+    
+    \item Un \textbf{Utente} può \textbf{salvare una ricerca effettuata}, per eseguirla nuovamente in futuro con facilità.
+    % \textbf{Criteri di accettazione}: un utente autenticato può inserire determinati criteri di ricerca e salvarli. Una volta salvati, essi sono visualizzabili dall'utente. Si può rapidamente eseguire una ricerca con gli stessi criteri di una ricerca salvata. I risultati devono essere aggiornati ai dati presenti nel sistema al momento della ricerca.
+
+    % \item Un \textbf{Utente} può \textbf{ripetere una ricerca salvata}, per visualizzare nuove inserzioni che rispettano gli stessi criteri o trovare piú velocemente inserzioni a cui era interessato.
+    
+    \item Un \textbf{Utente} può \textbf{impostare le proprie preferenze di notifica}, per decidere quali tipologie ricevere e per quali eventi.
+    % \textbf{Criteri di accettazione}: Un utente autenticato può modificare le proprie preferenze di notifica e visualizzare in tempo reale aggiornamenti relativi agli eventi di proprio interesse, conformi alle proprie preferenze.
+    
+    \item Un \textbf{Utente} può \textbf{effettuare l'autenticazione}, per sfruttare funzionalità del sistema quali ricerche salvate e notifiche, o per utilizzarlo nel proprio lavoro come Agente immobiliare o Manager di un'agenzia.
+    % \textbf{Criteri di accettazione}: un utente può effettuare l'autenticazione inserendo le proprie credenziali, o collegando account di terze parti. Le credenziali devono essere verificate. Un utente non autenticato può solo utilizzare la funzionalità di ricerca.
+    
+    \item Un \textbf{Manager di agenzia immobiliare} può \textbf{registrare la propria agenzia}, per fornire agli agenti immobiliari che vi lavorano una piattaforma digitale ove caricare le inserzioni degli immobili da loro gestite, ottenendo maggiore visibilità da parte di eventuali clienti.
+    % \textbf{Criteri di accettazione}: un manager che ha effettuato l'autenticazione può caricare la propria agenzia inserendone il nome e l'iban. L'agenzia non deve essere già stata inserita. Il manager potrà utilizzare le funzionalità di amministrazione, ma solo per la propria agenzia.
+    
+    \item Un \textbf{Manager di agenzia immobiliare} può \textbf{aggiungere un altro manager alla propria agenzia}, per dare a un altro utente i suoi stessi permessi manageriali.
+    % \textbf{Criteri di accettazione}: il manager di un'agenzia può accordare ad altri utenti già registrati i suoi stessi privilegi, solo per la propria agenzia. Utenti che sono già affiliati presso un'agenzia diversa non sono eligibili per tale operazione.
+    
+    \item Un \textbf{Manager di agenzia immobiliare} può \textbf{aggiungere un agente immobiliare alla propria agenzia}, per permettergli di lavorare nella piattaforma.
+    % \textbf{Criteri di accettazione}: il manager potrà accordare ad altri utenti già registrati il ruolo di agente immobiliare, rendendoli affiliati alla propria agenzia. Utenti che sono già affiliati presso un'agenzia diversa non sono eligibili per tale operazione.
+    
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{Figures/Use_Case.png}
+    \caption{Use Case Diagram}
+    \label{fig:usecase-diagram}
+\end{figure}
+\footnotetext{Diagramma realizzato tramite il software di modellazione open source \href{https://gaphor.org/}{Gaphor}}

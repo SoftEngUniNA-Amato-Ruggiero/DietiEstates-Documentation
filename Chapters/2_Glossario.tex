@@ -1,0 +1,67 @@
+\section*{Glossario}
+
+In questa sezione vengono definiti i termini tecnici, i concetti e i ruoli ricorrenti nel documento dei requisiti software, al fine di garantire chiarezza e coerenza terminologica.
+
+\begin{itemize}
+
+    \item \textbf{Account:} insieme delle credenziali e dei dati personali che identificano un utente registrato all’interno del sistema. Permette l’accesso alle funzionalità riservate della piattaforma.
+
+    \item \textbf{Agente immobiliare:} utente che, all’interno di un’agenzia, ha il compito di gestire le diverse tipologie di inserzioni relative agli immobili.
+
+    \item \textbf{Agenzia immobiliare:} entità gestita da uno o più manager, per la quale lavorano uno o più agenti. Ogni agenzia dispone di un identificativo univoco e di un conto associato tramite IBAN.
+
+    \item \textbf{Amazon Cognito:} servizio cloud fornito da AWS (Amazon Web Services) per la gestione sicura dell’autenticazione e dell’autorizzazione degli utenti. Consente la registrazione, il login e l’integrazione con provider di terze parti tramite OAuth.
+
+    \item \textbf{API (Application Programming Interface):} insieme di endpoint e regole che permettono la comunicazione tra diverse applicazioni.
+
+    \item \textbf{Autenticazione:} processo mediante il quale il sistema verifica l’identità di un utente, tipicamente tramite credenziali (email e password) o provider esterni (OAuth).
+
+    \item \textbf{Autorizzazione:} processo successivo all’autenticazione che stabilisce quali azioni l’utente può compiere, in base al ruolo assegnato (utente, agente, manager).
+
+    \item \textbf{Backend:} parte dell’applicazione che gestisce la logica del sistema, l’elaborazione dei dati e l’interazione con il database. È responsabile della validazione delle richieste provenienti dal frontend.
+
+    \item \textbf{Cognito Hosted UI:} interfaccia utente ospitata da Cognito che consente la registrazione e l’accesso.
+
+    \item \textbf{Database relazionale:} archivio di dati strutturato in tabelle, collegate da relazioni definite. Garantisce integrità, consistenza e assenza di duplicati tramite vincoli (es. chiavi primarie e univocità).
+
+    \item \textbf{Frontend:} componente dell’applicazione che fornisce l’interfaccia grafica e interattiva agli utenti, permettendo loro di utilizzare le funzionalità del sistema.
+
+    \item \textbf{GeoJSON:} formato basato su JSON utilizzato per rappresentare dati geografici, come punti, poligoni o linee. Nel sistema è impiegato per memorizzare le coordinate geografiche degli immobili.
+
+    \item \textbf{HTTP (HyperText Transfer Protocol):} protocollo di comunicazione di rete utilizzato al livello applicazione.
+
+    \item \textbf{IBAN (International Bank Account Number):} codice bancario internazionale utilizzato per identificare univocamente un conto corrente. Ogni agenzia immobiliare deve specificare il proprio IBAN durante la registrazione.
+
+    \item \textbf{Inserzione:} annuncio pubblicato sulla piattaforma contenente le informazioni relative a una proprietà immobiliare. Ogni inserzione è associata a un agente e a un’agenzia, oltre che a delle coordinate che ne identificano la posizione.
+
+    \item \textbf{JWT (JSON Web Token):} token firmato digitalmente che contiene informazioni sull’identità dell’utente e i suoi permessi. È utilizzato per autenticare le richieste successive all’accesso in modo sicuro e stateless.
+
+    \item \textbf{Manager:} ruolo di un utente che gestisce un’agenzia immobiliare. Ha la possibilità di promuovere altri utenti ad agenti o manager, oltre a supervisionare vari aspetti dell'agenzia.
+
+    \item \textbf{Mappa interattiva:} componente dell’interfaccia grafica che consente di visualizzare di una mappa tramite la quale è possibile visualizzare o aggiungere informazioni associate a una specifica posizione.
+
+    \item \textbf{Mock-up:} rappresentazione visiva o prototipo statico di un’interfaccia utente, utilizzata per mostrare il design e il flusso di interazione previsto.
+
+    \item \textbf{Notifica:} messaggio generato dal sistema per informare un utente di un evento rilevante (es. nuova inserzione, aggiornamento di un immobile, messaggio promozionale).
+
+    \item \textbf{OAuth:} protocollo standard per l’autenticazione tramite provider esterni (Google, Facebook, ecc.), che consente di accedere senza creare nuove credenziali.
+
+    \item \textbf{Persona:} rappresentazione fittizia ma realistica di un utente-tipo, basata su dati e comportamenti osservabili. Utilizzata per modellare il target di riferimento dell’applicazione.
+
+    \item \textbf{Requisiti funzionali:} insieme di specifiche che descrivono le funzionalità che il sistema deve offrire agli utenti.
+
+    \item \textbf{Requisiti non funzionali:} vincoli e proprietà qualitative del sistema, come prestazioni, sicurezza, manutenibilità e usabilità.
+
+    \item \textbf{Ricerca avanzata:} funzionalità che consente agli utenti di filtrare gli immobili in base a diversi criteri (prezzo, posizione, caratteristiche tecniche, ecc.).
+
+    \item \textbf{Ruolo utente:} insieme di permessi e responsabilità associati a una categoria di utenti (es. utente base, agente immobiliare, manager).
+
+    \item \textbf{Session Storage:} area di memoria del browser utilizzata per conservare dati temporanei della sessione, come i token di autenticazione.
+
+    \item \textbf{Sistema di notifiche:} componente software responsabile della generazione, gestione e consegna delle notifiche personalizzate per ciascun utente.
+
+    \item \textbf{Use Case Diagram:} diagramma UML che rappresenta in modo grafico le interazioni tra gli attori e le funzionalità principali del sistema.
+
+    \item \textbf{Utente:} persona registrata alla piattaforma, che può cercare immobili, salvare ricerche e ricevere notifiche.
+    
+\end{itemize}

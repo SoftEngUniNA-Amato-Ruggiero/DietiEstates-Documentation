@@ -1,0 +1,40 @@
+\section{Amazon Cognito}
+Amazon Cognito permette di definire uno user pool che puó essere utilizzato da una o piú applicazioni.
+Per ogni user pool è possibile definire i dati dell'utente che si desiderano salvare, specificando un dato identificativo (uno username univoco, l'email oppure il numero di telefono). Lo user pool dell'applicazione Dieti Estates salva:
+\begin{itemize}
+    \item Email (id)
+    \item Nome
+    \item Cognome
+\end{itemize}
+Ogni user pool mette a disposizione dei programmatori una Hosted UI a cui è possibile reindirizzare gli utenti per eseguire l'accesso. La Hosted UI mostra automaticamente i form richiesti dall'utente per autenticarsi, sia in caso di registrazione che di login, oltre a pulsanti per effettuare l'autenticazione tramite provider esterni, qualora siano utilizzati. Affinché il reindirizzamento funzioni, è necessario specificare un URL a cui reindirizzare gli utenti dopo aver eseguito il login. storage. L'applicazione Frontend deve essere configurata di conseguenza per salvare il JWT nel session storage e inviarlo a ogni richiesta HTTP successiva (operazione automatizzata da Angular). 
+
+Il flusso dell'autenticazione è il seguente:
+
+\begin{enumerate}
+    \item L'utente viene reindirizzato alla Cognito Hosted UI per effettuare l'autenticazione.
+    \item L'utente effettua l'autenticazione direttamente, oppure tramite provider esterno.
+    \item Cognito restituisce un JWT firmato contenente l'identità dell'utente.
+    \item Il frontend salva il JWT nel session storage del browser.
+    \item Per ogni richiesta autenticata, il frontend allega il JWT nell'header HTTP:
+    \begin{verbatim}
+        Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...
+    \end{verbatim}
+    \item Il backend valida il JWT verificando la firma con le chiavi pubbliche di Cognito.
+    \item Se valido, il backend estrae l'identità dell'utente dai claim dei JWT.
+\end{enumerate}
+
+Questo approccio mantiene il backend stateless: non è necessario mantenere sessioni lato server o consultare un database per ogni richiesta.
+
+\section{Amazon SNS}
+
+Il sistema utilizza Amazon SNS per inviare notifiche via email aglil utenti interessati.
+\textbf{Flusso delle notifiche}:
+\begin{enumerate}
+    \item Un agente carica una nuova inserzione nel sistema.
+    \item Un listener JPA intercetta l'evento di creazione (\texttt{@PostPersist}).
+    \item Il backend verifica quali ricerche salvate corrispondono alla nuova inserzione.
+    \item Per ogni utente interessato, il backend pubblica un messaggio sul topic SNS.
+    \item SNS inoltra automaticamente il messaggio all'indirizzo email dell'utente sottoscritto.
+    \item L'utente riceve la notifica via email.
+\end{enumerate}
+Le notifiche sono gestite in modo asincrono rispetto al caricamento dell'inserzione.

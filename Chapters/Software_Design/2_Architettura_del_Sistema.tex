@@ -1,0 +1,30 @@
+\section{Architettura di sistema}
+Il sistema DietiEstates25 è organizzato secondo un'architettura client-server che si appoggia su servizi esterni per funzionalità come l'autenticazione e l'invio di notifiche. I componenti principali comunicano tra loro in maniera sincrona attraverso API REST.
+
+L'architettura si compone dei seguenti servizi:
+
+\begin{itemize}
+    \item \textbf{Frontend}: Applicazione web single page che gestisce l'interfaccia utente.
+    \item \textbf{Backend}: Server stateless che espone API REST per fornire servizi di accesso ai dati e logica di business.
+    \item \textbf{Database}: Gestione della persistenza dei dati.
+    \item \textbf{Servizio di autenticazione}: Gestione dell'identità degli utenti e delle loro sessioni.
+    \item \textbf{Servizio di notifiche}: Gestione dei topic di messaggi e delle sottoscrizioni.
+    \item \textbf{Servizio geografico}: Gestione della mappa interattiva, del geocoding e dell'autocompletamento degli indirizzi
+\end{itemize}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{Figures/architecture-diagram.png}
+\caption{Architettura del sistema}
+\label{fig:architecture}
+\end{figure}
+
+La separazione tra frontend e backend permette di sviluppare e deployare i due componenti in modo indipendente, astraendo la logica di presentazione dalla logica di business. I servizi esterni migliorano la modularità del sistema favorendo la separazione delle responsabilità al livello architetturale.
+
+Il backend si occupa principalmente delle operazioni per cui è richiesto un accesso ai dati salvati, mentre delega a servizi esterni la gestione di autenticazione e notifiche, favorendo l'applicazione del principio di singola responsabilità anche a livello architetturale.
+
+Il servizio di autenticazione verifica le credenziali dell'utente e, in caso di successo, emette un JWT (JSON Web Token), che l'utente invierà al backend con ogni richiesta. Fornisce anche le chiavi che il backend utilizzerà per effettuare la validazione del token. L'uso del JWT è standard per la comunicazione tramite API REST, permettendo al backend di rimanere stateless e lasciando che le informazioni relative alla sessione utente restino sempre lato client.
+
+Il servizio di notifiche mantiene un insieme di topic a cui è possibile inviare messaggi. Per ogni topic, gestisce una lista di sottoscrizioni a cui i messaggi verranno inoltrati, nella maniera specificata da ciascun subscriber. Questa logica è tipica del pattern Observer, che permette di gestire aggiornamenti a diverse entitá garantendo modularità, efficienza e scalabilità: i topic, cioé gli observable, notificano tutti i subscriber, cioé gli observer, ogni volta che ricevono un messaggio. I subscriber definiscono autonomamente come ricevere tale notifica e quali filtri applicare. L'uso di un servizio esterno permette di inviare notifiche in modo asincrono rispetto all'operazione di cui si vogliono informare i subscriber. Dopo aver inviato un messaggio a un topic, il backend puó continuare l'esecuzione senza assicurarsi che le notifiche vengano inviate, migliorando le performance del sistema.
+
+Il servizio geografico offre un provider per la mappa interattiva, servizi di geocoding per ottenere coordinate dagli indirizzi e viceversa, servizi di autocompletamento di indirizzi inseriti dall'utente.
