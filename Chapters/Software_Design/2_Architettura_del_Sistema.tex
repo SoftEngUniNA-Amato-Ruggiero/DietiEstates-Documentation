@@ -28,3 +28,38 @@ Il servizio di autenticazione verifica le credenziali dell'utente e, in caso di 
 Il servizio di notifiche mantiene un insieme di topic a cui è possibile inviare messaggi. Per ogni topic, gestisce una lista di sottoscrizioni a cui i messaggi verranno inoltrati, nella maniera specificata da ciascun subscriber. Questa logica è tipica del pattern Observer, che permette di gestire aggiornamenti a diverse entitá garantendo modularità, efficienza e scalabilità: i topic, cioé gli observable, notificano tutti i subscriber, cioé gli observer, ogni volta che ricevono un messaggio. I subscriber definiscono autonomamente come ricevere tale notifica e quali filtri applicare. L'uso di un servizio esterno permette di inviare notifiche in modo asincrono rispetto all'operazione di cui si vogliono informare i subscriber. Dopo aver inviato un messaggio a un topic, il backend puó continuare l'esecuzione senza assicurarsi che le notifiche vengano inviate, migliorando le performance del sistema.
 
 Il servizio geografico offre un provider per la mappa interattiva, servizi di geocoding per ottenere coordinate dagli indirizzi e viceversa, servizi di autocompletamento di indirizzi inseriti dall'utente.
+
+
+\section{Diagrammi di sequenza}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\linewidth]{Figures/SequenceDiagrams/search.drawio.png}
+    \caption{Sequence diagram - Ricerca}
+    \label{fig:sequence-search}
+\end{figure}
+% \hyperref[fig:sequence-search]{fig}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\linewidth]{Figures/SequenceDiagrams/saved-search.drawio.png}
+    \caption{Sequence diagram - Ricerche salvate}
+    \label{fig:sequence-savedsearch}
+\end{figure}
+% \hyperref[fig:sequence-savedsearch]{fig}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1\linewidth]{Figures/SequenceDiagrams/upload.drawio.png}
+    \caption{Sequence diagram - Caricamento inserzioni}
+    \label{fig:sequence-upload}
+\end{figure}
+% \hyperref[fig:sequence-upload]{fig}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1\linewidth]{Figures/SequenceDiagrams/notifications-preferences.drawio.png} 
+    \caption{Sequence diagram - Preferenze di notifica}
+    \label{fig:sequence-notifications}
+\end{figure}
+% \hyperref[fig:sequence-notifications]{fig}

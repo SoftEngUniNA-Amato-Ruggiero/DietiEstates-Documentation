@@ -10,16 +10,12 @@
         \end{itemize}
     \item \href{https://projectlombok.org/}{Project Lombok}: libreria per la riduzione del boilerplate, permette di generare automaticamente getter, setter, costruttori, validazione dell'input e molto altro. 
     \item \href{https://www.red-gate.com/products/flyway/community/}{Flyway}: Strumento per gestire le migrazioni del database: permette di versionare gli script SQL, applicando automaticamente quelli nuovi, e di definire script riutilizzabili, comodi per popolare il database con dati da utilizzare in fase di test.
+    \item \href{https://projects.eclipse.org/projects/locationtech}{LocationTech}: libreria per tipi di dati spaziali compatibile con l'estensione GIS del database.
 \end{itemize}
 
 \section{Object design}
-Il backend segue un'architettura a strati aperta: ogni layer puó utilizzare le funzionalitá offerte da tutti gli strati sottostanti.
-\begin{figure}
-    \centering
-    \includegraphics[width=0.5\linewidth]{Figures/object-architecture.png}
-    \caption{Backend - layered architecture}
-    \label{fig:object-design}
-\end{figure}
+Il backend segue la classica architettura a strati model-repository-service-controller, fortemente incoraggiata dal framework Spring. Strati inferiori non sono a conoscenza di quelli superiori, rendendo il sistema più facile da modificare ed estendere.
+A questi si aggiungono package dedicati ai dto, a pattern utilizzati, come visitor e factory, a componenti di applicazioni Spring come interceptor e listener.
 
 \subsection{Model}
 Lo strato piú basso è dato dal package model, nel quale sono definite le entitá che richiedono persistenza.
@@ -67,7 +63,7 @@ Per le inserzioni, non essendo necessario implementare meccanismi di promozione,
 
 \subsubsection{Ricerche salvate}
 Le ricerche salvate contengono come attributi i campi che l'utente puó utilizzare come filtri per eseguire la ricerca. Sono anch'esse organizzate per ereditarietà in base alla tipologia di inserzione che si intende cercare.
-
+A differenza delle inserzioni, per cui vengono salvate le coordinate esatte come punto, il campo di ricerca è un piú generico oggetto Geometry, predisponendo il sistema ad effettuare ricerche non solo basate sulla distanza da un punto, ma anche entro figure geometriche determinate dall'utente (ad esempio, disegnandole sulla mappa).
 \begin{figure}
     \centering
     \includegraphics[width=0.5\linewidth]{Figures/UML/model-savedsearches.png}
@@ -78,7 +74,7 @@ Le ricerche salvate contengono come attributi i campi che l'utente puó utilizza
 \subsection{DTO}
 Il pattern DTO permette di definire interfacce di comunicazione con l'esterno, senza esporre tutti i dati in uso dall'entitá del model.
 I DTO devono essere semplici classi di trasferimento di dati, senza alcuna logica, con attributi relativi ai soli dati di un'entità che si intende scambiare con l'esterno.
-Sono definiti DTO diversi per le richieste e le risposte per ogni entitá. È stato anche definito un DTO per risultati di una ricerca, che si limita a riportare l'id dell'inserzione e la posizione affinché venga visualizzata correttamente sulla mappa. Un DTO "me" contiene le informazioni dell'utente che invia la richiesta.
+Sono definiti DTO diversi per le richieste e le risposte per ogni entitá. È stato anche definito un DTO per risultati di una ricerca, che si limita a riportare l'id dell'inserzione e la posizione affinché venga visualizzata correttamente sulla mappa. Un DTO "me" contiene le informazioni dell'utente che invia la richiesta. Come per le ricerche salvate, il DTO relativo alla ricerca utilizza un campo Geometry invece che un punto esatto.
 
 \subsection{Repository}
 Grazie alle tecnologie utilizzate, non è necessario implementare manualmente i DAO: il framework Spring Boot favorisce l'utilizzo del pattern repository per astrarre i meccanismi di accesso ai dati. Una volta definita un'interfaccia che estenda \textit{JpaRepository<T><ID>} indicando come generics un'entità del model e il tipo della sua chiave primaria, il framework crea automaticamente un'implementazione che fornisce le operazioni CRUD piú semplici basandosi sul nome dei metodi.
@@ -206,7 +202,7 @@ Oltre a rappresentare la soluzione piú utilizzata in ambito industriale, GitHub
 \begin{figure}
     \centering
     \includegraphics[width=0.8\linewidth]{Figures/GitHub/actions-usage-metrics.png}
-    \caption{GitHub - Metriche di uso delle GitHub Actions}
+    \caption{GitHub - Metriche di utilizzo delle GitHub Actions}
     \label{fig:github-actions-usage-metrics}
 \end{figure}
 \begin{figure}

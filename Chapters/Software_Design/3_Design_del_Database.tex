@@ -1,19 +1,72 @@
 \section{Tecnologie utilizzate}
-Si è deciso di utilizzare un DBMS relazionale dotato di GIS, per facilitare l'uso di query geospaziali e le ricerche basate sulla distanza. L'uso di un database relazionale garantisce le proprietà ACID (Atomicity, Consistency, Isolation, and Durability).
+Si è deciso di utilizzare un DBMS relazionale con estensione GIS (Geographic Information System), per facilitare l'uso di query geospaziali, come ricerche di elementi entro una data distanza da un punto. L'uso di un database relazionale garantisce le proprietà ACID (Atomicity, Consistency, Isolation, Durability).
 \newline
-Come DBMS è stato scelto \href{https://www.postgresql.org/}{Postgres}, uno dei DBMS relazionali gratuiti e open source piú utilizzati, dotato di un'eccellente estensione spaziale, \href{https://postgis.net/}{PostGIS}. 
+Come DBMS è stato scelto \href{https://www.postgresql.org/}{Postgres}, ampiamente utilizzato, open source e ben documentato, per il quale è disponibile l'estensione geospaziale \href{https://postgis.net/}{PostGIS}.
 
 \section{Schema}
-Le entità individuate sono le seguenti:
-\begin{itemize}
-    \item TODO
-\end{itemize}
-
-Per il sistema di tag è stata definita un'associazione molti a molti tra le inserzioni e i tag presenti nel database. Questo evita duplicazioni e permette di effettuare piú facilmente la ricerca.
 
 \begin{figure}
     \centering
-    \includegraphics[width=0.95\linewidth]{Figures/UML/db-public-schema.png}
+    \includegraphics[width=0.9\linewidth]{Figures/UML/db-public-schema.png}
     \caption{Schema del database}
     \label{fig:db-public-schema}
 \end{figure}
+
+Lo schema è stato inizialmente generato tramite le annotazioni dell'ORM a partire dal package model del backend, ed è versionato tramite il tool di migrazione Flyway.
+Le entità sono illustrate nel \hyperref[fig:db-public-schema]{diagramma UML in figura}.
+% Le entità sono le seguenti:
+% \begin{itemize}
+%     \item Users
+%     \item Business users
+%     \item Real estate agents
+%     \item Real estate managers
+%     \item Real estate agencies
+%     \item Dietiestates roles
+%     \item Insertions for sale
+%     \item Insertions for rent
+%     \item Addresses
+%     \item Tags
+%     \item Saved searches
+%     \item Saved searches for sale
+%     \item Saved searches for rent
+%     \item Notification preferences
+% \end{itemize}
+Particolare attenzione è stata fatta all'utilizzo di opportuni constraint e di meccanismi di cascade, ove necessari.
+
+Le relazioni sono:
+\begin{itemize}
+    \item Users N..N Dietiestates roles (mappata su tabella user\_roles)
+    \item Business users N..1 Real estate agencies (mappata lato business users)
+    \item Insertions N..1 Users (mappata lato insertions)
+    \item Insertions N..1 Real estate agencies (mappata lato insertions)
+    \item Insertions N..1 Addresses (mappata lato insertions)
+    \item Insertions N..N Tags (mappata su tabella insertion\_tags)
+    \item Notification preferences 1..1 Users (mappata lato notification preferences)
+    \item Saved searches N..1 Users (mappata lato saved searches)
+\end{itemize}
+
+Le relazioni many to one sono sempre state mappate dal lato many per garantire l'efficienza delle query.
+La relazione tra preferenze di notifica e utenti è mappata dalle preferenze di notifica per maggiore coesione: l'utente puó esistere indipendentemente dalle preferenze di notifica, ma non è vero il contrario.
+\newline
+Infine, una tabella search\_tags è una collezione di elementi senza vincolo di unicitá che associa a ogni ricerca salvata un set di stringhe relativo ai tag applicati alla ricerca dall'utente (che possono non esistere come tag realmente collegati alle inserzioni presenti nel database, per i quali invece vale il vincolo di unicità).
+
+\section{Indici}
+Postgres indicizza automaticamente tutte le colonne con vincolo di unicità.
+Oltre a questi, è stato ritenuto opportuno definire indici per i campi delle inserzioni soggetti a ricerca, come i tag, il prezzo o l'affitto.
+Per le query geospaziali, infine, è fondamentale definire un indice che faccia uso di un GiST (Generalized Search Tree) per le coordinate geografiche.
+\begin{lstlisting}
+CREATE INDEX IF NOT EXISTS addresses_location ON addresses using gist (location);
+CREATE INDEX IF NOT EXISTS insertions_uploader_id ON insertions (uploader_id);
+CREATE INDEX IF NOT EXISTS insertions_agency_id ON insertions (agency_id);
+CREATE INDEX IF NOT EXISTS insertions_address_id ON insertions (address_id);
+CREATE INDEX IF NOT EXISTS insertions_tags_tag_id ON insertion_tags (tag_id);
+CREATE INDEX IF NOT EXISTS insertions_tags_insertion_id ON insertion_tags (insertion_id);
+CREATE INDEX IF NOT EXISTS insertions_for_rent_rent ON insertions_for_rent (rent);
+CREATE INDEX IF NOT EXISTS insertions_for_sale_price ON insertions_for_sale (price);
+CREATE INDEX IF NOT EXISTS business_users_agency_id ON business_users (agency_id);
+CREATE INDEX idx_saved_searches_user_id ON saved_searches (user_id);
+\end{lstlisting}
+
+\section{Deployment}
+È presente assieme al codice sorgente del backend un file di configurazione di docker-compose che prevede la creazione un container apposito per il database, con minima configurazione.
+Il database è anche disponibile sul servizio di cloud computing Amazon RDS.

@@ -1,39 +1,140 @@
 \section{Tecnologie utilizzate}
-Il frontend DietiEstates25 è sviluppato come Single Page Application (SPA) utilizzando tecnologie web moderne che garantiscono un'esperienza utente fluida.
-
-\subsection{Angular 20}
-Angular è un framework completo per la costruzione di applicazioni web moderne, in particolare di Single Page Application (SPA). A differenza di altre soluzioni, Angular è più opinionated, e fornisce fin dall'inizio un sistema integrato che copre la maggior parte delle necessità di un'applicazione complessa.\\
-Angular permette di organizzare l'interfaccia in componenti, unità modulari, quindi riutilizzabili, che incapsulano logica, template HTML e stili CSS. Questa struttura favorisce la separazione delle responsabilità e rende l'applicazione più manutenibile e scalabile. Un altro elemento centrale è il sistema di Dependency Injection; è il framework a gestire le dipendenze tra i vari servizi e componenti, riducendo l'accoppiamento tra le parti dell'applicazione.\\
-Angular include un modulo di routing nativo, ossia permette di gestire la navigazione tra diverse viste dell'applicazione senza dover ricaricare la pagina, simulando il funzionamento di un sito multipagina in una SPA. Per la gestione dell'input utente, il framework mette a disposizione le Reactive Forms, un approccio fortemente dichiarativo e tipizzato che facilita la creazione di form complessi con annessa validazione finale dei dati, sia sincrona che asincrona.\\
-Dal punto di vista della comunicazione con il backend, Angular fornisce un HTTP Client integrato pensato per interagire con API REST e servizi esterni.\\
-Nel complesso Angular si propone come soluzione particolarmente adatta allo sviluppo di applicazioni medio-grandi.
-
-\subsection{Typescript}
-Typescript è un superset di JavaScript che aggiunge tipizzazione statica al linguaggio. Ogni tipo è esplicito a tempo di compilazione.\\
-Le inconsistenze sono segnalate dal compilatore, accelerando di gran lunga lo sviluppo dell'applicazione. Inoltre i tipi fungono da documentazione stessa essendo autoesplicativi.
-
-\subsection{Bootstrap}
-Bootstrap è un framework CSS che fornisce componenti UI predefinite con una griglia responsiva di supporto. Per componenti più sofisticati è stato utilizzato Angular Material, cercando di utilizzare il meglio di entrambi i framework.\\
-
-\textbf{Caratteristiche principali}
 \begin{itemize}
-    \item \textbf{Responsive Design}: Il layout si adatta a schermi di diverse dimensioni (dektop, mobile), fondamentale per una qualsiasi applicazione web moderna.
-    \item \textbf{Componenti pronti}: Navbar, modal, card, etc. Tutti con stili consistenti.
-    \item \textbf{Riduzione CSS}: Non è necessario scrivere codice CSS per gli elementi in comune.
+    \item \href{https://www.typescriptlang.org/}{TypeScript}: superset di JavaScript che aggiunge tipizzazione statica al linguaggio. Obbligatorio per applicazioni in Angular.
+    \item \href{https://www.npmjs.com/package/npm}{npm}: package manager per la gestione delle dipendenze.
+    \item \href{https://v20.angular.dev/overview}{Angular 20}: framework opinionated per la realizzazione di applicazioni web single page, che gestisce autonomamente numerose funzionalitá quali client-side routing, sanificazione degli input, bundling e minification. Permette di organizzare l'interfaccia in componenti che incapsulano logica, template HTML, stili CSS e test unitari, garantendo la separazione delle responsabilità. Offre meccanismi automatici per la dependency injection dei servizi, che possono essere utilizzati per incapsulare logica comune a piú componenti. Dispone anche di numerose librerie di componenti giá realizzati che è possibile importare tramite npm.
+    \item \href{https://getbootstrap.com/}{Bootstrap}: framework CSS che definisce classi HTML con stili predefiniti.
+    \item \href{https://ng-bootstrap.github.io/#/home}{ng-bootstrap}: libreria di componenti di Angular basata su Bootstrap.
+    \item \href{https://material.angular.dev/}{Angular Material}: libreria di componenti di Angular che seguono principi di material design.
+    \item \href{https://leafletjs.com/}{Leaflet}: libreria JavaScript per la logica frontend relativa alla visualizzazione di mappe interattive, compatibile con diversi provider.
+    \item \href{https://leaflet.github.io/Leaflet.markercluster/}{Leaflet.markercluster}: plugin di Leaflet che permette di collassare piú marker ravvicinati in cluster.
+    \item \href{https://geoapify.github.io/geocoder-autocomplete/}{Geoapify Geocoder Autocomplete}: libreria JavaScript per l'autocompletamento degli indirizzi tramite le API di Geoapify.
+    \item \href{https://quilljs.com/}{Quill}: libreria JavaScript per la realizzazione di rich text editor.
+    
+    % \item ngx-leaflet: componente che utilizza Leaflet per mostrare la mappa interattiva.
+    % \item ngx-quill: componente che utilizza Quill per mostrare un rich text editor.
 \end{itemize}
 
-\subsection{Geoapify}
-Geoapify è un provider esterno che fornisce servizi di geocoding e mappe.
+\section{Principi di design adottati}
+Per garantire la facilità di utilizzo su diversi dispositivi, il design è stato progettato per essere responsive e adattarsi a schermi di diverse dimensioni (dektop, mobile).
+\newline
+Sono stati seguiti principi di psicologia della gestalt, raggruppando insieme i campi dei form e curando la prossimitá di campi correlati.
+\newline
+In accordo con i principi fondamentali di Human Computer Interaction, vengono mostrate schermate di conferma per azioni quali il caricamento di un immobile o la promozione di un utente e feedback informativi in seguito ad upload di inserzioni e il cambiamento delle preferenze di notifica. Si è cercato di prevenire errori rendendo i pulsanti di sottomissione dei form attivabili solo una volta che tutti i campi obbligatori sono stati inseriti. Nella footbar è presente un link alla documentazione OpenAPI, permettendo agli utenti avanzati di implementare personalmente script per velocizzare le operazioni.
+\newline
+Si è cercato inoltre di mantenere un numero minimale di informazioni a schermo per ridurre il memory load degli utenti, e di rendere i form di ricerca avanzata e di caricamento e la visualizzazione dettagliata degli immobili strutturalmente simili tra loro, favorendo la coerenza interna del sistema. La navbar permette di muoversi rapidamente verso le schermate principali da qualsiasi parte dell'applicazione.
+\newline
+I colori principali sono il bianco e il nero. La scelta è determinata dalla volontà di non affaticare utenti business esponendoli a colori troppo sgargianti, mantenendo un look neutro e professionale. Il rosso è riservato ai pulsanti relativi a operazioni critiche, come la cancellazione, mentre i pulsanti disattivati sono grigi.
 
 \section{Object design}
 
 \subsection{Components}
 
+\subsubsection{navbar}
+La barra di navigazione dell'applicazione, visibile da ogni pagina. Con viewport al di sotto di una certa larghezza (come per esempio da mobile), viene visualizzata in forma di menu collassabile (tramite apposito burger button). Mostra link diversi in base allo stato dell'utente e il suo ruolo. In particolare:
+\begin{itemize}
+    \item Homepage: reindirizza alla schermata principale. Sempre visibile da tutti gli utenti.
+    \item Login/Signup: permette agli utenti di autenticarsi
+    \item Profile: per utenti autenticati, reindirizza al componente user-profile.
+    \item Agent Dashboard: per agenti immobiliari autenticati, mostra i form di caricamento delle inserzioni.
+    \item Agency Management: per gestori di agenzie immobiliari, mostra informazioni relative all'agenzia e i form per promuovere utenti ad agenti o manager.
+    \item Logout: per utenti autenticati, termina la sessione.
+\end{itemize}
+
+\subsubsection{homepage}
+Landing page dell'applicazione. In essa, tutti gli utenti possono vedere il componente di ricerca avanzata. Oltre a quest'ultimo, una volta autenticati vengono visualizzate le ricerche salvate.
+La homepage, in caso di utente autenticato non appartenente a un'agenzia, mostra anche un pulsante che permette di aprire un modal (componente importato da Angular Material) per visualizzare il form di registrazione della propria agenzia (componente agency-upload).
+
+\subsubsection{advanced-search}
+Form reattivo per la ricerca di inserzioni. Il componente consiste in una visualizzazione della mappa interattiva tramite il componente dedicato, mostrando una barra di ricerca dotata di autocompletamento degli indirizzi e una mappa interattiva con un layer dedicato ai marker relativi alle inserzioni trovate, sui quali l'utente puó cliccare per visualizzare un modal con i dettagli dell'inserzione. È presente un radio button per selezionare la tipologia di inserzione desiderata, in base alla quale viene mostrato il campo per impostare il prezzo/affitto massimo dell'immobile. Infine, è possibile espandere un Accordion (componente fornito dalla libreria Angular Bootstrap) per visualizzare altri campi specifici del form di ricerca avanzata, che sono inizialmente nascosti per minimizzare il memory load degli utenti.
+
+\subsubsection{saved-searches}
+Una tabella che mostra tutte le ricerche salvate dell'utente. Per ogni ricerca vengono mostrati indirizzo di partenza, distanza limite e tutti gli ulteriori filtri (come il prezzo massimo o le dimensioni minime desiderate).
+Ogni ricerca può essere eliminata con Delete o ripetuta con Search. I valori di una ricerca rieseguita vengono applicati al form di ricerca avanzata, mostrando  quindi i risultati aggiornati.
+
+\subsubsection{agency-upload}
+Questo componente include un form che permette di registrare un'agenzia. Richiede un nome ed un IBAN.
+
+\subsubsection{user-profile}
+Pagina per visualizzare le informazioni personali dell'utente e modificare le proprie preferenze di notifica.
+
+\subsubsection{notifications-preferences}
+Tabelle che mostrano le preferenze di notifica dell'utente e permettono di modificarle.
+
+\subsubsection{agency-management}
+Una dashboard per i manager delle agenzie, tramite la quale possono visualizzare informazioni relative alla propria agenzia (componente agency-info) la lista di agenti (componente agents-list) e promuovere utenti al ruolo di agenti o manager per la propria agenzia (componente user-promotion-forms).
+\begin{itemize}
+    \item \textbf{agents-list}: Mostra la lista degli agenti che lavorano per l'agenzia con paginazione mostrando il loro ID e email.
+    \item \textbf{user-promotion-forms}: Permette ai manager di aggiungere nuovi dipendenti all'agenzia. Ha due tab per aggiungere rispettivamente agenti e manager, richiedendo solo la mail, a patto che si siano già autenticati nel sistema.
+\end{itemize}
+
+\subsubsection{agent-dashboard}
+È la schermata principale per gli agenti immobiliari, dove possono visualizzare informazioni relative alla propria agenzia (componente agency-info) e caricare inserzioni (tramite i componenti insertion-upload).
+
+\subsubsection{agency-info}
+Componente per visualizzare i dati della propria agenzia (nome, IBAN).
+
+\subsubsection{insertion-upload}
+Diviso in:
+
+\begin{itemize}
+    \item \textbf{base-insertion-upload}: Contiene tutti i campi comuni per le diverse tipologie di inserzione. Utilizzato come base che gli altri form possono estendere. Utilizza il componente map-component per mostrare la barra di ricerca con autocompletamento degli indirizzi e la mappa.
+     Click su mappa = Reverse Geocoding (coordinate → indirizzo)
+     Ha un editor di testo (Quill) per la descrizione
+     Contiene i campi per tag, metratura e numero di stanze
+         
+    \item \textbf{insertion-for-sale-upload}: Form specifico per caricare annunci di immobili in vendita. Utilizza il componente base aggiungendo i campi specifici per il tipo di inserzione. Una volta inserite le informazioni e cliccato su submit viene mostrato un modal di riepilogo che se confermato invia i dati al backend. Ritorno alla homepage dopo la conferma.
+    
+    \item \textbf{insertion-for-rent-upload}: Form specifico per caricare annunci di immobili in affitto. Funzionalmente identico al precedente.
+\end{itemize}
+
+\subsubsection{tags-fields}
+Un input field del form di ricerca avanzata per inserire i tag. Sono visualizzati come chip, componente fornito da Angular Material.
+
+\subsubsection{insertion-view-modal}
+Basato sul componente modal di Angular Material, presenta due modalità distinte, a seconda che sia stato aperto in fase di visualizzazione o di upload di una nuova inserzione: nel primo caso, si limita a mostrare il componente insertion-view, mentre nel secondo funge da anteprima dell'inserzione che si desidera caricare, mostrando come apparirà agli utenti finali e permettendo di confermare o meno l'upload tramite pulsanti appositi.
+
+\subsubsection{insertion-view}
+Mostra i dettagli completi dell'annuncio immobiliare. La visualizzazione è separata in sezioni: indirizzo, tags (mostrati come chips, componente incluso con Angular Material), prezzo/affitto, dettagli tecnici e descrizione. Quest'ultima è rinchiusa in un accordion per non occupare troppo spazio.
+%TODO: QUI BISOGNEREBBE SPECIFICARE I CHILD COMPONENT?
+
+\subsubsection{map-component}
+Il componente mappa riutilizzabile in ogni parte dell'applicazione. Gestisce la visualizzazione della mappa interattiva tramite ngx-leaflet (componente di terze parti) e la barra di ricerca tramite il componente Autocomplete di Geoapify, il quale fornisce autocompletamento degli indirizzi in tempo reale. Quando viene inserito un indirizzo nella barra di ricerca, la mappa viene spostata all'indirizzo selezionato.
+La mappa viene inizialmente centrata sulla posizione dell'utente.
+Il componente riceve in input un layer diverso a seconda che si desideri mostrare i marker di risultati di ricerca o piazzare un marker relativo a un'inserzione da caricare, e permette di definire l'azione da eseguire quando la mappa viene cliccata o quando viene selezionato un indirizzo tramite la barra di ricerca.
+
+\subsubsection{login}
+Questo componente si occupa di reindirizzare l'utente alla cognito hosted UI per effettuare l'autenticazione, dopo la quale verrá reindirizzato nuovamente alla homepage. Durante il caricamento, viene visualizzato uno spinner con un messaggio di reindirizzamento.
+
+\subsubsection{logout}
+Simile al componente di Login, si occupa semplicemente di pulire il session store e reindirizzare l'utente all'url di logout di cognito, da cui verrá poi reindirizzato nuovamente alla schermata home, mostrando durante il caricmento uno spinner con messaggio di arrivederci.
+
+
 \subsection{Services}
+I servizi incapsulano logica comune ai componenti, vengono istanziati da Angular all'avvio dell'applicazione e resi disponibili ai componenti tramite dependency injection.
+\begin{itemize}
+    \item \textbf{auth-service}: 
+    \item \textbf{user-state-service}:
+    \item \textbf{backend-client-service}:
+    \item \textbf{geoapify-client-service}:
+    \item \textbf{insertion-preview-service}:
+    \item \textbf{notifications-preferences-service}:
+    \item \textbf{saved-search-service}:
+    \item \textbf{distance-converter}: converte la distanza in km espressa dall'utente in distanza in gradi richiesta dal backend per le query spaziali, e viceversa.
+\end{itemize}
 
 \subsection{Guards}
+Le guards sono meccanismi di protezione della route. Decidono se si può accedere ad una pagina o meno.
+\begin{itemize}
+    \item \textbf{auth-guard}: autorizza l'accesso a una route solo agli utenti autenticati. Attivato per le route /profile, /agency-management, /agent-dashboard, /logout % TODO: Verifichi che i path siano corretti? Grazie
+    \item \textbf{noauth-guard}
+    \item \textbf{agent-guard}
+    \item \textbf{manager-guard}
+\end{itemize}
+
 
 \subsection{Interceptors}
-
-
-Angular 20, Typescript, Angular Material, Bootstrap, Leaflet, Geoapify, Quill.
+Gli interceptor vengono eseguiti prima di inviare una richiesta http, eventualmente apportandovi alcune modifiche.
+\begin{itemize}
+    \item \textbf{auth-interceptor}: allega all'header delle richieste in uscita il JWT dell'utente, qualora sia autenticato.
+\end{itemize}
