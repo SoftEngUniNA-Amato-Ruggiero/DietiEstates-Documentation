@@ -44,7 +44,7 @@ Con la composizione, è necessario che la classe abbia una sua implementazione d
 \newline
 Questo problema è risolto da Lombok, tramite il meccanismo \textit{delegate}. Tramite lombok, è possibile delegare a un attributo che implementa un'interfaccia la realizzazione della stessa nella classe che lo possiede. Si potranno ora utilizzare i metodi dell'interfaccia con la classe in questione, che chiamerá il metodo corrispondente per l'attributo delegato. Questo meccanismo permette di evitare ridondanza, ridurre il boilerplate ed ottenere comunque un comportamento polimorfico grazie all'interfaccia comune.
 
-\begin{figure}
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.8\linewidth]{Figures/UML/model-users.png}
     \caption{Class diagram - users model}
@@ -54,7 +54,7 @@ Questo problema è risolto da Lombok, tramite il meccanismo \textit{delegate}. T
 \subsubsection{Inserzioni}
 Per le inserzioni, non essendo necessario implementare meccanismi di promozione, è stato sufficiente utilizzare l'ereditarietá. Un'interfaccia comune a tutte le inserzioni, che definisce le operazioni base, viene estesa da altre due che definiscono operazioni specifiche per inserzioni dotate di prezzo (come quelle in vendita) o di affitto (come quelle in affitto o, in futuro, le case vacanza). Una classe astratta implementa le funzionalitá comuni, mentre classi concrete si limitano a implementare le operazioni specifiche per il loro tipo. Attributi non essenziali utilizzati per le ricerche sono gestiti da una classe separata, InsertionDetails, che puó essere facilmente modificata senza compromettere l'entità principale. Attraverso l'annotazione "Embeddable", gli attributi di questa classe saranno mappati dall'ORM come colonne dell'entità che la include.
 
-\begin{figure}
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.8\linewidth]{Figures/UML/model-insertions.png}
     \caption{Class diagram - insertions model}
@@ -64,7 +64,7 @@ Per le inserzioni, non essendo necessario implementare meccanismi di promozione,
 \subsubsection{Ricerche salvate}
 Le ricerche salvate contengono come attributi i campi che l'utente puó utilizzare come filtri per eseguire la ricerca. Sono anch'esse organizzate per ereditarietà in base alla tipologia di inserzione che si intende cercare.
 A differenza delle inserzioni, per cui vengono salvate le coordinate esatte come punto, il campo di ricerca è un piú generico oggetto Geometry, predisponendo il sistema ad effettuare ricerche non solo basate sulla distanza da un punto, ma anche entro figure geometriche determinate dall'utente (ad esempio, disegnandole sulla mappa).
-\begin{figure}
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.5\linewidth]{Figures/UML/model-savedsearches.png}
     \caption{Class diagram - saved searches model}
@@ -118,36 +118,35 @@ Le classi del model definiscono un metodo "accept" che prende in input il visito
 L'implementazione concreta del visitor penserà a eseguire le operazioni necessarie. 
 Il controller potrà utilizzare l'implementazione concreta per passarla agli oggetti del model.
 
-\begin{figure}
+Per le \hyperref[fig:visitor-insertionsdto]{inserzioni}, il pattern visitor è stato utilizzato per produrre il DTO specifico quando non si conosce il tipo concreto dell'inserzione. In questo modo è possibile restituire pagine di DTO con le informazioni specifiche di ogni inserzione in base al proprio tipo.
+Per le \hyperref[fig:visitor-savedsearches]{ricerche salvate}, è stato utilizzato per ottenere i risultati aggiornati in tempo reale di una ricerca eseguita con gli stessi criteri di quella salvata.
+
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.9\linewidth]{Figures/UML/visitor-insertionsdto.png}
     \caption{Class diagram - pattern visitor per le inserzioni}
     \label{fig:visitor-insertionsdto}
 \end{figure}
 
-\begin{figure}
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.9\linewidth]{Figures/UML/visitor-savedsearches.png}
     \caption{Class diagram - pattern visitor per le ricerche salvate}
     \label{fig:visitor-savedsearches}
 \end{figure}
 
-Per le \hyperref[fig:visitor-insertionsdto]{inserzioni}, il pattern visitor è stato utilizzato per produrre il DTO specifico quando non si conosce il tipo concreto dell'inserzione. In questo modo è possibile restituire pagine di DTO con le informazioni specifiche di ogni inserzione in base al proprio tipo.
-Per le \hyperref[fig:visitor-savedsearches]{ricerche salvate}, è stato utilizzato per ottenere i risultati aggiornati in tempo reale di una ricerca eseguita con gli stessi criteri di quella salvata.
-
 \subsection{Factory}
 Il pattern factory permette di creare oggetti che implementano una stessa interfaccia senza esplicitarne il tipo.
 Un'interfaccia "Abstract Factory" definisce metodi per la creazione di oggetti che implementano un'interfaccia. Le sue diverse implementazioni produrranno oggetti concreti di tipo diverso.
 
-\begin{figure}
+Questo pattern è stato utilizzato per la creazione di \hyperref[fig:factory-insertions]{inserzioni} a partire dalle richieste HTTP ricevute dagli agenti immobiliari.
+
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.9\linewidth]{Figures/UML/factory-insertions.png}
     \caption{Class diagram - pattern factory per le inserzioni}
     \label{fig:factory-insertions}
 \end{figure}
-
-Questo pattern è stato utilizzato per la creazione di \hyperref[fig:factory-insertions]{inserzioni} a partire dalle richieste HTTP ricevute dagli agenti immobiliari.
-
 
 \subsection{Service}
 Il service layer utilizza quindi le repository e le entità del model per implementare la logica di business necessaria.
@@ -187,25 +186,25 @@ Il backend definisce anche un endpoint specifico dove è possibile visualizzare 
 Per il versionamento del codice è stato utilizzato git, con repository remota su GitHub, disponibile al seguente indirizzo: \newline \url{https://github.com/SoftEngUniNA-Amato-Ruggiero/DietiEstates-Backend}.
 \newline
 Oltre a rappresentare la soluzione piú utilizzata in ambito industriale, GitHub permette di definire azioni da eseguire ad ogni push, utilizzate per eseguire la scansione del codice tramite strumenti di analisi automatica nella pipeline CI/CD.
-\begin{figure}
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.8\linewidth]{Figures/GitHub/commits-over-time.png}
     \caption{GitHub - Cronologia dei commit}
     \label{fig:github-commits-over-time}
 \end{figure}
-\begin{figure}
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.8\linewidth]{Figures/GitHub/code-frequency.png}
     \caption{GitHub - Code Frequency}
     \label{fig:github-code-frequency}
 \end{figure}
-\begin{figure}
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.8\linewidth]{Figures/GitHub/actions-usage-metrics.png}
     \caption{GitHub - Metriche di utilizzo delle GitHub Actions}
     \label{fig:github-actions-usage-metrics}
 \end{figure}
-\begin{figure}
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.8\linewidth]{Figures/GitHub/actions-performance-metrics.png}
     \caption{GitHub - Metriche di performance delle GitHub Actions}
@@ -231,7 +230,7 @@ Dal report non sono emersi problemi. I risultati sono consultabili al seguente l
 \newline
 \url{https://sonarcloud.io/summary/overall?id=softengunina-amato-ruggiero_dietiestates-backend&branch=main}
 
-\begin{figure}
+\begin{figure}[H]
     \centering
     \includegraphics[width=1\linewidth]{Figures/sonarqube-report-backend.png}
     \caption{Report di SonarQube}
@@ -243,7 +242,7 @@ Per l'analisi di Qodana sono state utilizzate le regole di default date dal prof
 Dal report non sono emersi problemi. I risultati sono consultabili al seguente link: \newline 
 \url{https://qodana.cloud/projects/dXeRo/reports/gEmNV4}
 
-\begin{figure}
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.95\linewidth]{Figures/qodana-report-backend.png}
     \caption{Report di Qodana}

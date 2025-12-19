@@ -31,19 +31,20 @@ public BusinessUser promoteToBusinessUser(@NonNull BaseUser user, @NonNull RealE
 }
 \end{lstlisting}
 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{Figures/CFG/promoteToBusinessUser.png}
+    \caption{ CFG - promoteToBusinessUser }
+    \label{fig:promoteToBusinessUser}
+\end{figure}
+
 Sono stati definiti i seguenti test per coprire i branch del \hyperref[fig:promoteToBusinessUser]{CFG}:
 \begin{itemize}
     \item promoteToBusinessUser\_WhenBusinessUserIsEmpty
     \item promoteToBusinessUser\_WhenBUserFoundAgencyMatches
     \item promoteToBusinessUser\_WhenBUserFoundAgencyNotMatch
 \end{itemize}
-
-\begin{figure}
-    \centering
-    \includegraphics[width=0.8\linewidth]{Figures/CFG/promoteToBusinessUser.png}
-    \caption{ CFG - promoteToBusinessUser }
-    \label{fig:promoteToBusinessUser}
-\end{figure}
 
 \begin{lstlisting}[breaklines=true]
 @Test
@@ -106,18 +107,18 @@ public void publishMessageToTopic(@NonNull String message,
 }
 \end{lstlisting}
 
-Sono stati definiti i seguenti test per coprire i branch del \hyperref[fig:publishMessageToTopic]{CFG}:
-\begin{itemize}
-    \item publishMessageToTopic
-    \item publishMessageToTopic\_WhenAttributesIsNull
-\end{itemize}
-
-\begin{figure}
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.8\linewidth]{Figures/CFG/publishMessageToTopic.png}
     \caption{ CFG - publishMessageToTopic }
     \label{fig:publishMessageToTopic}
 \end{figure}
+
+Sono stati definiti i seguenti test per coprire i branch del \hyperref[fig:publishMessageToTopic]{CFG}:
+\begin{itemize}
+    \item publishMessageToTopic
+    \item publishMessageToTopic\_WhenAttributesIsNull
+\end{itemize}
 
 \begin{lstlisting}[breaklines=true]
 @Test
@@ -178,7 +179,7 @@ public void enableEmailSubscription(@NonNull NotificationsPreferences prefs) thr
 }
 \end{lstlisting}
 
-\begin{figure}
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.5\linewidth]{Figures/CFG/enableEmailSubscription.png}
     \caption{ CFG - enableEmailSubscription }
@@ -270,7 +271,7 @@ public void disableEmailSubscription(@NonNull NotificationsPreferences prefs) th
 }
 \end{lstlisting}
 
-\begin{figure}
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.5\linewidth]{Figures/CFG/disableEmailSubscription.png}
     \caption{ CFG - disableEmailSubscription }
