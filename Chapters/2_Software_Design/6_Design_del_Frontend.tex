@@ -113,23 +113,22 @@ Simile al componente di Login, si occupa semplicemente di pulire il session stor
 \subsection{Services}
 I servizi incapsulano logica comune ai componenti, vengono istanziati da Angular all'avvio dell'applicazione e resi disponibili ai componenti tramite dependency injection.
 \begin{itemize}
-    \item \textbf{auth-service}: 
-    \item \textbf{user-state-service}:
-    \item \textbf{backend-client-service}:
-    \item \textbf{geoapify-client-service}:
-    \item \textbf{insertion-preview-service}:
-    \item \textbf{notifications-preferences-service}:
-    \item \textbf{saved-search-service}:
+    \item \textbf{auth-service}: gestisce l'autenticazione tramite Oauth. Espone i metodi per login e logout.
+    \item \textbf{user-state-service}: mantiene informazioni relative all'utente autenticato, come email, ruoli e preferenze di notifica.
+    \item \textbf{backend-client-service}: gestisce le chiamate HTTP al backend.
+    \item \textbf{geoapify-client-service}: interfaccia con l'API di Geoapify per il reverse geocoding. Converte coordinate geografiche in indirizzi leggibili.
+    \item \textbf{insertion-preview-service}: gestisce l'apertura del modal di riepilogo delle inserzioni.
+    \item \textbf{saved-search-service}: coordina la comunicazione tra componenti relativi alle ricerche salvate.
     \item \textbf{distance-converter}: converte la distanza in km espressa dall'utente in distanza in gradi richiesta dal backend per le query spaziali, e viceversa.
 \end{itemize}
 
 \subsection{Guards}
 Le guards sono meccanismi di protezione della route. Decidono se si può accedere ad una pagina o meno.
 \begin{itemize}
-    \item \textbf{auth-guard}: autorizza l'accesso a una route solo agli utenti autenticati. Attivato per le route /profile, /agency-management, /agent-dashboard, /logout % TODO: Verifichi che i path siano corretti? Grazie
-    \item \textbf{noauth-guard}
-    \item \textbf{agent-guard}
-    \item \textbf{manager-guard}
+    \item \textbf{auth-guard}: autorizza l'accesso a una route solo agli utenti autenticati. Attivato per le route /profile, /agency, /dashboard, /logout.
+    \item \textbf{noauth-guard}: autorizza l'accesso a una route solo agli utenti non autenticati. Attivato per la route /login.
+    \item \textbf{agent-guard}: autorizza l'accesso a una route solo agli utenti con il ruolo di agente. Attivato per la route /dashboard.
+    \item \textbf{manager-guard}: autorizza l'accesso a una route solo agli utenti con il ruolo di agente. Attivato per la route /agency.
 \end{itemize}
 
 

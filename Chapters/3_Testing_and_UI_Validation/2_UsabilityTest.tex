@@ -1,0 +1,198 @@
+
+%https://www.interaction-design.org/literature/article/shneiderman-s-eight-golden-rules-will-help-you-design-better-interfaces
+
+%https://www.nngroup.com/articles/ten-usability-heuristics/
+\section{Expert review}
+
+\subsection{Approccio alla definizione della checklist}
+Affinché la valutazione sia esauriente, è stata definita una checklist di usabilità seguendo due approcci:
+\begin{itemize}
+    \item \textbf{Heuristic Evaluation}: la checklist verifica che siano rispettate le euristiche di Nielsen-Molich e le golden rule di Shneiderman, le quali elencano i principi fondamentali di usabilità.
+    \item \textbf{Consistency Inspection}: l'interfaccia dell'applicazione deve presentare un livello di consistenza consolidato sia per l'aspetto visivo che per quello funzionale. La terminologia, il colore e il font devono essere uniformi.
+    %Altre che emergono dalla checklist?
+    % No, alla fine nella checklist che ho fatto io emergono solo queste due, ma se vuoi aggiungere cose lo possiamo valutare. Probabilmente il cognitive walkthrough. Eviterei invece le guidelines review perché dovremmo perdere tempo a studiarci delle guidelines definite da altri che alla fine servono solo a definire meglio i principi delle heuristic evaluation
+\end{itemize}
+
+\subsection{Checklist di usabilità finale}
+\begin{enumerate}
+    % (S7 keep users in control)
+    % [NM6 clearly marked exits]
+    \item Visiblitá dello stato del sistema: l'utente sa sempre dove si trova, i feedback sono chiari e immediati
+    \item Navigabilitá del sistema: l'utente sa sempre raggiungere la pagina desiderata
+
+    % (S1 strive for consistency)
+    % [NM4 consistency]
+    \item Coerenza interna: la terminologia e l'estetica sono coerenti in tutta l'applicazione
+
+    % (S5 prevent errors)
+    % [NM9 prevent errors]
+    \item Prevenzione degli errori: le azioni che modificano lo stato del sistema sono immediatamente riconoscibili, vengono richieste conferme per azioni irreversibili (cancellazioni) o potenzialmente pericolose (promozione di agenti), il caricamento di dati è possibile solo quando tutti i campi inseriti sono validi
+
+    % (S8 reduce short-term memory load)
+    % [NM3 minimize user memory load]
+    \item Riduzione del memory load: l'interfaccia mostra sempre e in modo chiaro tutte e sole le informazioni necessarie all'utente nella schermata di riferimento
+
+    % (S3 offer informative feedback)
+    % [NM5 feedback; NM8 good error messages]
+    \item Messaggi di errore: i messaggi di errore sono chiari e informativi
+    \item Feedback: dopo aver eseguito un'operazione l'utente viene correttamente informato del risultato
+\end{enumerate}
+
+\subsection{Applicazione della checklist al prodotto finito}
+La expert review riporta i seguenti problemi:
+\begin{enumerate}
+    \item Lo stato del sistema non è visibile quando l'utente viene reindirizzato alla schermata di autenticazione
+    \item La schermata per il caricamento delle inserzioni non è immediatamente visibile dalla home, il termine "Dashboard" utilizzato per la navbar è troppo generico
+
+    % ...
+\end{enumerate}
+
+
+\section{Esperimento con utenti reali}
+
+\subsection*{Criteri del reclutamento}
+\begin{itemize}
+    \item Età compresa tra i 18 e i 64 anni
+    \item Diversi livelli di competenza tecnologica
+    \item Differenti gradi di esperienza nel mercato immobiliare
+\end{itemize}
+
+\subsection{Soggetti reclutati}
+Al fine di ottenere una valutazione efficace sono stati reclutati 8 partecipanti.
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|c|l|c|l|}
+    \hline
+    \textbf{N} & \textbf{Età} & \textbf{Genere} & \textbf{Professione} & \textbf{Competenze digitali} & \textbf{Conoscenza dominio} \\
+    \hline
+    1 & 35 & M & Agente Immobiliare & Intermedie & Esperto \\
+    \hline
+    2 & 42 & F & Manager agenzia & Intermedie & Esperto \\
+    \hline
+    3 & 24 & M & Studente & Esperto & Base \\
+    \hline
+    4 & 52 & M & Agente Immobiliare & Base & Esperto \\
+    \hline
+    \end{tabular}
+    \caption{Soggetti reclutati per l'esperimento di valutazione dell'usabilità}
+    \label{tab:recruited-subjects}
+\end{table}
+
+\textbf{Svolgimento del test}
+Il test è stato condotto in un ambiente controllato, chiuso e silenzioso, su un PC desktop. Ogni sessione è durata dai 20 ai 30 minuti, ed è stato chiesto agli utenti di pensare a voce alta durante l'utilizzo dell'interfaccia per conformarsi al protocollo Think-aloud.
+
+\subsection{Definizione task e survey}
+Agli utenti viene chiesto di svolgere i seguenti task:
+\begin{enumerate}
+    \item Trovare tutti gli immobili in vendita che rispettino i seguenti criteri:
+        \begin{itemize}
+            \item situati a Napoli centro, 
+            \item prezzo inferiore a 50.000 euro, 
+            \item almeno due stanze
+        \end{itemize}
+    \item Pubblicare un'inserzione per un immobile in affitto inserendo i seguenti dati:
+        \begin{itemize}
+            \item Indirizzo: Via Roma 7, Melito di Napoli, 
+            \item Affitto mensile: 800 euro, 
+            \item Numero stanze: 3,
+            \item Dimensioni: 100 m²,
+            \item Piano: quinto,
+            \item Ascensore: no.
+        \end{itemize}
+    \item Disattivare le notifiche email
+    \item Registrare un'agenzia immobiliare
+    \item Promuovere un utente al ruolo di agente immobiliare
+\end{enumerate}
+
+Per ogni task, viene chiesto loro di assegnare alle seguenti affermazioni un punteggio da 1, se per niente d'accordo, a 5, se completamente d'accordo:
+\begin{enumerate}
+    \item Il task è stato eseguito senza errori
+    \item L'esecuzione del task non prevede passi superflui o ridondanti
+    \item I passi necessari per eseguire il task sono intuitivi e di facile comprensione
+    \item Il feedback per la terminazione del task è immediato, chiaro e conciso 
+\end{enumerate}
+
+% 4 domande x 5 task x 8 utenti = 160 righe!!
+% potremmo tagliare qualche utente per fare prima, ok
+%ma cosa vuoi scrivere in Domanda? Il numero della domanda
+
+\subsection{Risultati del survey}
+
+\subsubsection{Task 1}
+Trovare tutti gli immobili in vendita che rispettino i seguenti criteri:
+\begin{itemize}
+    \item situati a Napoli centro, 
+    \item prezzo inferiore a 50.000 euro, 
+    \item almeno due stanze.
+\end{itemize}
+
+\begin{longtable}{|L{8cm}|L{1cm}|L{1cm}|L{1cm}|L{1cm}|}
+    \caption{Risultati del survey - Task 1}
+    \label{tab:survey-task-1} \\ \hline
+    Affermazione & Voto U1 & Voto U2 & Voto U3 & Voto U4 \\ \hline 
+    Il task è stato eseguito senza errori & 5 & 4 & 5 & 2\\ \hline 
+    L'esecuzione del task non prevede passi superflui o ridondanti & 5 & 4 & 2 & 4\\ \hline 
+    I passi necessari per eseguire il task sono intuitivi e di facile comprensione & 3 & 3 & 5 & 2\\ \hline 
+    Il feedback per la terminazione del task è immediato, chiaro e conciso & 4 & 4 & 5 & 2\\ \hline
+\end{longtable}
+
+\subsubsection{Task 2}
+Pubblicare un'inserzione per un immobile in affitto inserendo i seguenti dati:
+\begin{itemize}
+    \item Indirizzo: Via Roma 7, Melito di Napoli, 
+    \item Affitto mensile: 800 euro, 
+    \item Numero stanze: 3,
+    \item Dimensioni: 100 m²,
+    \item Piano: quinto,
+    \item Ascensore: no.
+\end{itemize}
+
+\begin{longtable}{|L{8cm}|L{1cm}|L{1cm}|L{1cm}|L{1cm}|}
+    \caption{Risultati del survey - Task 2}
+    \label{tab:survey-task-2} \\ \hline
+    Affermazione & Voto U1 & Voto U2 & Voto U3 & Voto U4 \\ \hline 
+    Il task è stato eseguito senza errori & 5 & 4 & 5 & 2\\ \hline 
+    L'esecuzione del task non prevede passi superflui o ridondanti & 5 & 5 & 3 & 4\\ \hline 
+    I passi necessari per eseguire il task sono intuitivi e di facile comprensione & 4 & 3 & 5 & 2\\ \hline 
+    Il feedback per la terminazione del task è immediato, chiaro e conciso & 4 & 3 & 5 & 2\\ \hline
+\end{longtable}
+
+\subsubsection{Task 3}
+Disattivare le notifiche email.
+
+\begin{longtable}{|L{8cm}|L{1cm}|L{1cm}|L{1cm}|L{1cm}|}
+    \caption{Risultati del survey - Task 3}
+    \label{tab:survey-task-3} \\ \hline
+    Affermazione & Voto U1 & Voto U2 & Voto U3 & Voto U4 \\ \hline 
+    Il task è stato eseguito senza errori & 5 & 5 & 5 & 4\\ \hline 
+    L'esecuzione del task non prevede passi superflui o ridondanti & 5 & 5 & 4 & 4\\ \hline 
+    I passi necessari per eseguire il task sono intuitivi e di facile comprensione & 5 & 3 & 4 & 2\\ \hline 
+    Il feedback per la terminazione del task è immediato, chiaro e conciso & 5 & 5 & 5 & 4\\ \hline
+\end{longtable}
+
+\subsubsection{Task 4}
+Registrare un'agenzia immobiliare
+
+\begin{longtable}{|L{8cm}|L{1cm}|L{1cm}|L{1cm}|L{1cm}|}
+    \caption{Risultati del survey - Task 4}
+    \label{tab:survey-task-4} \\ \hline
+    Affermazione & Voto U1 & Voto U2 & Voto U3 & Voto U4 \\ \hline 
+    Il task è stato eseguito senza errori & 5 & 5 & 5 & 2\\ \hline 
+    L'esecuzione del task non prevede passi superflui o ridondanti & 5 & 5 & 4 & 4\\ \hline 
+    I passi necessari per eseguire il task sono intuitivi e di facile comprensione & 2 & 3 & 5 & 2\\ \hline 
+    Il feedback per la terminazione del task è immediato, chiaro e conciso & 2 & 2 & 5 & 2\\ \hline
+\end{longtable}
+
+\subsubsection{Task 5}
+Promuovere un utente al ruolo di agente immobiliare.
+    
+\begin{longtable}{|L{8cm}|L{1cm}|L{1cm}|L{1cm}|L{1cm}|}
+    \caption{Risultati del survey - Task 5}
+    \label{tab:survey-task-5} \\ \hline
+    Affermazione & Voto U1 & Voto U2 & Voto U3 & Voto U4 \\ \hline 
+    Il task è stato eseguito senza errori & 2 & 2 & 5 & 2\\ \hline 
+    L'esecuzione del task non prevede passi superflui o ridondanti & 5 & 5 & 2 & 3\\ \hline 
+    I passi necessari per eseguire il task sono intuitivi e di facile comprensione & 4 & 4 & 5 & 2\\ \hline 
+    Il feedback per la terminazione del task è immediato, chiaro e conciso & 4 & 3 & 5 & 2\\ \hline
+\end{longtable}

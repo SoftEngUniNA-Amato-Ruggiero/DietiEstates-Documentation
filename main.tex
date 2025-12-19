@@ -8,7 +8,6 @@
 \usepackage{lmodern}
 \usepackage{graphicx}
 \usepackage{xcolor}
-\usepackage{listings}
 \usepackage{hyperref}
 \usepackage{titlesec}
 \usepackage{setspace}
@@ -104,22 +103,22 @@
 
 \part{Documento dei Requisiti Software}
 \chapter{Introduzione}
-\include{Chapters/1_Introduction}
+\include{Chapters/1_Software_Requirements/1_Introduction}
 
 \chapter{Glossario}
-\include{Chapters/2_Glossario}
+\include{Chapters/1_Software_Requirements/2_Glossario}
 
 \chapter{Personas}
-\include{Chapters/Software_Requirements/3_Personas}
+\include{Chapters/1_Software_Requirements/3_Personas}
 
 \chapter{Modellazione dei Casi d'Uso}
-\include{Chapters/Software_Requirements/4_UseCases}
+\include{Chapters/1_Software_Requirements/4_UseCases}
 
 \chapter{Mockups}
-\include{Chapters/Software_Requirements/5_MockUps}
+\include{Chapters/1_Software_Requirements/5_MockUps}
 
-\chapter{Specifica formale dei requisiti}
-\include{Chapters/Software_Requirements/6_Cockburn}
+\chapter{Specifica formale dei requisiti di sistema}
+\include{Chapters/1_Software_Requirements/6_Cockburn}
 
 % \chapter{Specifica informale di ulteriori requisiti}
 % \include{Chapters/Software_Requirements/7_Requisiti}
@@ -129,22 +128,32 @@
 \part{Documento di Design del sistema}
 
 \chapter{Introduzione}
-\include{Chapters/Software_Design/1_Introduzione_al_Design}
+\include{Chapters/2_Software_Design/1_Introduzione_al_Design}
 
 \chapter{System Design}
-\include{Chapters/Software_Design/2_Architettura_del_Sistema}
+\include{Chapters/2_Software_Design/2_Architettura_del_Sistema}
 
 \chapter{Database}
-\include{Chapters/Software_Design/3_Design_del_Database}
+\include{Chapters/2_Software_Design/3_Design_del_Database}
 
 \chapter{Backend}
-\include{Chapters/Software_Design/5_Design_del_Backend}
+\include{Chapters/2_Software_Design/5_Design_del_Backend}
 
 \chapter{Frontend}
-\include{Chapters/Software_Design/6_Design_del_Frontend}
+\include{Chapters/2_Software_Design/6_Design_del_Frontend}
 
 \chapter{Servizi esterni}
-\include{Chapters/Software_Design/7_Servizi_esterni}
+\include{Chapters/2_Software_Design/7_Servizi_esterni}
+
+%-------------------------
+
+\part{Testing e valutazione dell’usabilità}
+
+\chapter{Testing}
+\include{Chapters/3_Testing_and_UI_Validation/1_Testing}
+
+\chapter{Valutazione dell'usabilità}
+\include{Chapters/3_Testing_and_UI_Validation/2_UsabilityTest}
 
 
 \end{document}
